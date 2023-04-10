@@ -4,12 +4,14 @@ import com.smoothmovement.SmoothMovement;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityServerMixin extends Entity
@@ -28,5 +30,11 @@ public abstract class LivingEntityServerMixin extends Entity
         }
 
         return org.scale(SmoothMovement.slownessFactor);
+    }
+
+    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;getValue()D", ordinal = 0))
+    private double onGravity(final AttributeInstance instance)
+    {
+        return instance.getValue() * SmoothMovement.slownessFactor;
     }
 }
