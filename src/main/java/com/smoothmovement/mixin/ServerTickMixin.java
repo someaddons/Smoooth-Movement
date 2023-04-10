@@ -22,17 +22,6 @@ public abstract class ServerTickMixin
     @Inject(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;getNanos()J", shift = At.Shift.AFTER, ordinal = 0))
     private void onServerTick(final BooleanSupplier p_129871_, final CallbackInfo ci)
     {
-        try
-        {
-           Thread.sleep(1);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-        SmoothMovement.LOGGER.info("Servertick");
-
         final double lastTickMs = this.tickTimes[this.getTickCount() % 100] * 1.0E-6D;
         if (lastTickMs > 50)
         {

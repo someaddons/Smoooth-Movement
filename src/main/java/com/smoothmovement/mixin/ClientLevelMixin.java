@@ -14,8 +14,6 @@ import org.spongepowered.asm.mixin.Unique;
  */
 public class ClientLevelMixin implements ClientLevelDeltaTime
 {
-    @Shadow @Final private EntityTickList tickingEntities;
-
     @Override
     public int getDeltaTime()
     {
@@ -29,11 +27,5 @@ public class ClientLevelMixin implements ClientLevelDeltaTime
     public void setDeltaTime(int deltaTime)
     {
         this.deltaTime = deltaTime;
-    }
-
-    @Override
-    public EntityTickList getTickingEntities()
-    {
-        return tickingEntities;
     }
 }
