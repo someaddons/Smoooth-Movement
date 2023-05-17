@@ -25,7 +25,7 @@ public class SmoothMovement
     public static final Logger        LOGGER = LogManager.getLogger();
     //public static       Configuration config = new Configuration();
     public static       Random        rand   = new Random();
-    public static double slownessFactor = 1.0d;
+    public static float slownessFactor = 1.0f;
 
     public SmoothMovement()
     {

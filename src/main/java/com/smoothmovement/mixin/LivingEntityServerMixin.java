@@ -4,14 +4,11 @@ import com.smoothmovement.SmoothMovement;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityServerMixin extends Entity
@@ -21,20 +18,9 @@ public abstract class LivingEntityServerMixin extends Entity
         super(p_19870_, p_19871_);
     }
 
-    @ModifyArg(method = "handleRelativeFrictionAndCalculateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"))
-    private Vec3 changeVel(final Vec3 org)
+    @Inject(method = "getSpeed", at = @At(value = "RETURN"), cancellable = true)
+    private void smoothmovement$getSpeed(final CallbackInfoReturnable<Float> cir)
     {
-        if (level.isClientSide || ((Object) this) instanceof Player)
-        {
-            return org;
-        }
-
-        return org.scale(SmoothMovement.slownessFactor);
-    }
-
-    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;getValue()D", ordinal = 0))
-    private double onGravity(final AttributeInstance instance)
-    {
-        return instance.getValue() * SmoothMovement.slownessFactor;
+        cir.setReturnValue(cir.getReturnValue() * SmoothMovement.slownessFactor);
     }
 }

@@ -25,11 +25,21 @@ public abstract class ServerTickMixin
         final double lastTickMs = this.tickTimes[this.getTickCount() % 100] * 1.0E-6D;
         if (lastTickMs > 50)
         {
-            SmoothMovement.slownessFactor = Mth.clamp(lastTickMs / 50, 1.0D, 5.0D);
+            SmoothMovement.slownessFactor = (float) Mth.clamp(lastTickMs / 50, 1.0D, 5.0D);
         }
         else
         {
-            SmoothMovement.slownessFactor = 1.0D;
+            SmoothMovement.slownessFactor = 1.0f;
         }
+/*
+        try
+        {
+            Thread.sleep(133);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ */
     }
 }

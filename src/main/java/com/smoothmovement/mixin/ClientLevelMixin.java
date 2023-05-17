@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ClientLevel.class)
 /**
- * Ticking entity fps culling for all
+ * Save time deltas on world basis
  */
 public class ClientLevelMixin implements ClientLevelDeltaTime
 {
