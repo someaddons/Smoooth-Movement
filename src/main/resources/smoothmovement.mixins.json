@@ -5,13 +5,24 @@
   "refmap": "smoothmovement.refmap.json",
   "mixinPriority": 2000,
   "mixins": [
-    "LivingEntityServerMixin",
-    "ServerTickMixin"
+    "item.ServerItemEntityMixin",
+    "livingentity.LivingEntityServerMixin",
+    "livingentity.LookControlMixin",
+    "livingentity.MoveControlMixin",
+    "nonliving.ServerExperienceOrbMixin",
+    "nonliving.ServerFallingBlockMixin",
+    "nonliving.ServerProjectileMixin",
+    "server.EntityPosSyncFix",
+    "time.ServerTickMixin"
   ],
   "client": [
-    "ClientLevelMixin",
-    "LivingEntityMixin",
-    "ClientPacketListenerMixin"
+    "item.ClientItemEntityMixin",
+    "nonliving.ClientMinecartMixin",
+    "time.ClientLevelTimeDeltaMixin",
+    "time.GametimePacketListenerMixin"
+  ],
+  "server": [
+
   ],
   "injectors": {
     "defaultRequire": 1

@@ -2,7 +2,7 @@ package com.smoothmovement;
 
 public interface ClientLevelDeltaTime
 {
-    int getDeltaTime();
+    double getSlownessFactor();
 
-    void setDeltaTime(int deltaTime);
+    void onTimePacket(long newGameTime);
 }

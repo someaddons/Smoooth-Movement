@@ -1,4 +1,4 @@
-package com.smoothmovement.mixin;
+package com.smoothmovement.mixin.time;
 
 import com.smoothmovement.ClientLevelDeltaTime;
 import net.minecraft.client.Minecraft;
@@ -12,13 +12,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
-public class ClientPacketListenerMixin
+public class GametimePacketListenerMixin
 {
-    @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
-    @Inject(method = "handleSetTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;setGameTime(J)V", shift = At.Shift.BEFORE))
+    @Inject(method = "handleSetTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;setGameTime(J)V"))
     private void onSetGameTime(final ClientboundSetTimePacket packet, final CallbackInfo ci)
     {
-        ((ClientLevelDeltaTime)minecraft.level).setDeltaTime((int) (minecraft.level.getGameTime() - packet.getGameTime()));
+        ((ClientLevelDeltaTime) minecraft.level).onTimePacket((packet.getGameTime()));
     }
 }

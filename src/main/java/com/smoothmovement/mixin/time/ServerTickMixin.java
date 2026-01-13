@@ -1,4 +1,4 @@
-package com.smoothmovement.mixin;
+package com.smoothmovement.mixin.time;
 
 import com.smoothmovement.SmoothMovement;
 import net.minecraft.server.MinecraftServer;
@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BooleanSupplier;
+
+import static com.smoothmovement.SmoothMovement.extraTickTotal;
+import static com.smoothmovement.SmoothMovement.extraTicks;
 
 @Mixin(MinecraftServer.class)
 public abstract class ServerTickMixin
@@ -25,21 +28,28 @@ public abstract class ServerTickMixin
         final double lastTickMs = this.tickTimes[this.getTickCount() % 100] * 1.0E-6D;
         if (lastTickMs > 50)
         {
-            SmoothMovement.slownessFactor = (float) Mth.clamp(lastTickMs / 50, 1.0D, 5.0D);
+            SmoothMovement.slownessFactor = (float) Mth.clamp(lastTickMs / 50, 1.0D, 10.0D);
         }
         else
         {
             SmoothMovement.slownessFactor = 1.0f;
+            extraTickTotal = 0;
         }
-/*
-        try
+
+        extraTickTotal += SmoothMovement.slownessFactor - 1.0f;
+        extraTicks = (int) extraTickTotal;
+        extraTickTotal = extraTickTotal - (extraTicks);
+
+        if (SmoothMovement.lag)
         {
-            Thread.sleep(133);
+            try
+            {
+                Thread.sleep(SmoothMovement.rand.nextInt(220)+SmoothMovement.rand.nextInt(40)+20);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
         }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
- */
     }
 }
