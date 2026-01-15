@@ -4,5 +4,7 @@ public interface ClientLevelDeltaTime
 {
     double getSlownessFactor();
 
-    void onTimePacket(long newGameTime);
+    double getVisualDayTime();
+
+    void onTimePacket(long newGameTime, final long dayTime);
 }

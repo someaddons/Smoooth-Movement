@@ -6,6 +6,7 @@
   "mixinPriority": 2000,
   "mixins": [
     "item.ServerItemEntityMixin",
+    "livingentity.ClientEntityMovementMixin",
     "livingentity.LivingEntityServerMixin",
     "livingentity.LookControlMixin",
     "livingentity.MoveControlMixin",
@@ -13,6 +14,7 @@
     "nonliving.ServerFallingBlockMixin",
     "nonliving.ServerProjectileMixin",
     "server.EntityPosSyncFix",
+    "time.ServerLevelDayTimeMixin",
     "time.ServerTickMixin"
   ],
   "client": [

@@ -29,16 +29,16 @@ public abstract class ServerTickMixin
         if (lastTickMs > 50)
         {
             SmoothMovement.slownessFactor = (float) Mth.clamp(lastTickMs / 50, 1.0D, 10.0D);
+            extraTickTotal += SmoothMovement.slownessFactor - 1.0f;
+            extraTicks = (int) extraTickTotal;
+            extraTickTotal = extraTickTotal - (extraTicks);
         }
         else
         {
             SmoothMovement.slownessFactor = 1.0f;
             extraTickTotal = 0;
+            extraTicks = 0;
         }
-
-        extraTickTotal += SmoothMovement.slownessFactor - 1.0f;
-        extraTicks = (int) extraTickTotal;
-        extraTickTotal = extraTickTotal - (extraTicks);
 
         if (SmoothMovement.lag)
         {
