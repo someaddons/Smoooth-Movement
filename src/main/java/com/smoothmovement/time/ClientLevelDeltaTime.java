@@ -1,4 +1,4 @@
-package com.smoothmovement;
+package com.smoothmovement.time;
 
 public interface ClientLevelDeltaTime
 {

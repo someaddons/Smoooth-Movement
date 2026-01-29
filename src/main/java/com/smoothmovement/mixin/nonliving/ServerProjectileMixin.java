@@ -1,6 +1,7 @@
 package com.smoothmovement.mixin.nonliving;
 
-import com.smoothmovement.SmoothMovement;
+import com.smoothmovement.config.CommonConfiguration;
+import com.smoothmovement.time.ServerTime;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -28,10 +29,10 @@ public abstract class ServerProjectileMixin extends Entity
     @Inject(method = "tick", at = @At("RETURN"))
     private void extraTicks(final CallbackInfo ci)
     {
-        if (!extraTicking && !level().isClientSide)
+        if (!extraTicking && !level().isClientSide && CommonConfiguration.config.getCommonConfig().enableProjectileLagAdjustedMovement)
         {
             extraTicking = true;
-            for (int i = 0; i < SmoothMovement.extraTicks; i++)
+            for (int i = 0; i < ServerTime.extraTicks; i++)
             {
                 tick();
             }

@@ -1,12 +1,11 @@
 package com.smoothmovement.mixin.nonliving;
 
-import com.smoothmovement.SmoothMovement;
+import com.smoothmovement.config.CommonConfiguration;
+import com.smoothmovement.time.ServerTime;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,22 +22,22 @@ public abstract class ServerFallingBlockMixin extends Entity
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/FallingBlockEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"))
     private Vec3 changeVel(final Vec3 org)
     {
-        if (level().isClientSide)
+        if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableFallingBlockLagAdjustedMovement)
         {
             return org;
         }
 
-        return org.scale(SmoothMovement.slownessFactor);
+        return org.scale(ServerTime.slownessFactor);
     }
 
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;", ordinal = 0), index = 1)
     private double changeGravity(final double gravity)
     {
-        if (level().isClientSide)
+        if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableFallingBlockLagAdjustedMovement)
         {
             return gravity;
         }
 
-        return gravity * SmoothMovement.slownessFactor;
+        return gravity * ServerTime.slownessFactor;
     }
 }

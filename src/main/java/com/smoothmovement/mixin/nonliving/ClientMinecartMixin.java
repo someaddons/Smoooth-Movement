@@ -1,9 +1,9 @@
 package com.smoothmovement.mixin.nonliving;
 
-import com.smoothmovement.ClientLevelDeltaTime;
+import com.smoothmovement.config.CommonConfiguration;
+import com.smoothmovement.time.ClientLevelDeltaTime;
 import com.smoothmovement.SmoothMovement;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -61,6 +61,11 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
         final boolean teleport,
         final CallbackInfo ci)
     {
+        if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing)
+        {
+            return;
+        }
+
         if (teleport || SmoothMovement.getDistanceSquared(x, y, z, getX(), getY(), getZ()) > 10 * 10)
         {
             lSteps = 0;
@@ -72,15 +77,11 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
 
         lSteps = 0;
 
-
-        if (level() instanceof ClientLevelDeltaTime deltaLevel)
+        if (level().getBlockState(BlockPos.containing(x, y, z)).is(BlockTags.RAILS))
         {
-            if (level().getBlockState(BlockPos.containing(x, y, z)).is(BlockTags.RAILS))
-            {
-                lSteps = (int) Math.max(5, Math.min(100, Math.round(5 * (deltaLevel.getSlownessFactor())))) * 2;
-            }
-            velocityLerpSteps = (int) Math.max(3, Math.min(30, Math.round(3 * (deltaLevel.getSlownessFactor()))));
+            lSteps = (int) Math.max(5, Math.min(100, Math.round(5 * (deltaLevel.getSlownessFactor())))) * 2;
         }
+        velocityLerpSteps = (int) Math.max(3, Math.min(30, Math.round(3 * (deltaLevel.getSlownessFactor()))));
 
         if (!isAlive())
         {
@@ -98,27 +99,34 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
     @Inject(method = "lerpMotion", at = @At("HEAD"), cancellable = true)
     public void lerpMotion(final double x, final double y, final double z, final CallbackInfo ci)
     {
-        if (level() instanceof ClientLevelDeltaTime deltaLevel)
+        if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing)
         {
-            ci.cancel();
+            return;
+        }
 
-            if (getDeltaMovement().length() <= 0.01)
-            {
-                setDeltaMovement(x, y, z);
-                return;
-            }
+        ci.cancel();
 
-            if (x == 0 && y == 0 && z == 0)
-            {
-                setDeltaMovement(0,0,0);
-            }
+        if (getDeltaMovement().length() <= 0.01)
+        {
+            setDeltaMovement(x, y, z);
+            return;
+        }
+
+        if (x == 0 && y == 0 && z == 0)
+        {
+            setDeltaMovement(0, 0, 0);
         }
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(final CallbackInfo ci)
     {
-        if (!level().isClientSide)
+        if (!level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing)
+        {
+            return;
+        }
+
+        if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0)
         {
             return;
         }

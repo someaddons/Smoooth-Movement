@@ -1,14 +1,12 @@
 package com.smoothmovement.mixin.item;
 
-import com.smoothmovement.ClientLevelDeltaTime;
-import com.smoothmovement.SmoothMovement;
-import net.minecraft.core.particles.ParticleTypes;
+import com.smoothmovement.config.CommonConfiguration;
+import com.smoothmovement.time.ClientLevelDeltaTime;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,7 +40,13 @@ public abstract class ClientItemEntityMixin extends Entity
     @Override
     public void lerpTo(double x, double y, double z, float yRot, float xRot, int p_19901_, boolean p_19902_)
     {
-        level().addParticle(ParticleTypes.HAPPY_VILLAGER, x, y, z, 0, 0, 0);
+        if (!CommonConfiguration.config.getCommonConfig().enableItemSmoothing)
+        {
+            super.lerpTo(x, y, z, yRot, xRot, p_19901_, p_19902_);
+            return;
+        }
+
+        //level().addParticle(ParticleTypes.HAPPY_VILLAGER, x, y, z, 0, 0, 0);
         positionDelayTicks = 2;
         if (level() instanceof ClientLevelDeltaTime deltaLevel
             && (getDistanceSquared(x, y, z, getX(), getY(), getZ()) < getDistanceSquared(lerpX, lerpY, lerpZ, getX(), getY(), getZ()))
@@ -60,11 +64,18 @@ public abstract class ClientItemEntityMixin extends Entity
     }
 
     @Override
-    public void lerpMotion(double p_20306_, double p_20307_, double p_20308_)
+    public void lerpMotion(double x, double y, double z)
     {
-        if (positionDelayTicks < 2 || tickCount < 2 || (level() instanceof ClientLevelDeltaTime deltaLevel && deltaLevel.getSlownessFactor() < 1.1) || !(level() instanceof ClientLevelDeltaTime))
+        if (!CommonConfiguration.config.getCommonConfig().enableItemSmoothing)
         {
-            this.setDeltaMovement(p_20306_, p_20307_, p_20308_);
+            super.lerpMotion(x, y, z);
+            return;
+        }
+
+        if (positionDelayTicks < 2 || tickCount < 2 || (level() instanceof ClientLevelDeltaTime deltaLevel && deltaLevel.getSlownessFactor() < 1.1)
+            || !(level() instanceof ClientLevelDeltaTime))
+        {
+            this.setDeltaMovement(x, y, z);
         }
     }
 
@@ -87,7 +98,7 @@ public abstract class ClientItemEntityMixin extends Entity
     @Inject(method = "tick", at = @At("HEAD"))
     private void checkUpdatePos(final CallbackInfo ci)
     {
-        if (!level().isClientSide)
+        if (!level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableItemSmoothing)
         {
             return;
         }

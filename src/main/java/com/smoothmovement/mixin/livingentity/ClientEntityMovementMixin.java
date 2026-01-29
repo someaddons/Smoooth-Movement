@@ -1,7 +1,7 @@
 package com.smoothmovement.mixin.livingentity;
 
-import com.smoothmovement.ClientLevelDeltaTime;
-import net.minecraft.core.particles.ParticleTypes;
+import com.smoothmovement.config.CommonConfiguration;
+import com.smoothmovement.time.ClientLevelDeltaTime;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -64,6 +64,11 @@ public abstract class ClientEntityMovementMixin extends Entity
         final boolean teleport,
         final CallbackInfo ci)
     {
+         if (!CommonConfiguration.config.getCommonConfig().enableLivingEntitySmoothing)
+         {
+             return;
+         }
+
         //level().addParticle(ParticleTypes.HAPPY_VILLAGER, x, y, z, 0, 0, 0);
         lerpSteps = defaultLerp;
         if (level() instanceof ClientLevelDeltaTime deltaLevel)
@@ -88,6 +93,11 @@ public abstract class ClientEntityMovementMixin extends Entity
     private void onPosLerpHead(
         final float p_21005_, final int p_21006_, final CallbackInfo ci)
     {
+        if (!CommonConfiguration.config.getCommonConfig().enableLivingEntitySmoothing)
+        {
+            return;
+        }
+
         lerpHeadSteps = defaultLerp;
         if (level() instanceof ClientLevelDeltaTime deltaLevel)
         {

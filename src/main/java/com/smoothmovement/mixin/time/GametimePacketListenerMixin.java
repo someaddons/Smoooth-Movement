@@ -1,6 +1,6 @@
 package com.smoothmovement.mixin.time;
 
-import com.smoothmovement.ClientLevelDeltaTime;
+import com.smoothmovement.time.ClientLevelDeltaTime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;

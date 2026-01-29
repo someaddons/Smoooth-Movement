@@ -1,6 +1,8 @@
 package com.smoothmovement.mixin.time;
 
 import com.smoothmovement.SmoothMovement;
+import com.smoothmovement.config.CommonConfiguration;
+import com.smoothmovement.time.ServerTime;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
@@ -42,9 +44,9 @@ public abstract class ServerLevelDayTimeMixin extends Level
     @Inject(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setDayTime(J)V", shift = At.Shift.AFTER))
     private void adjustDayTime(final CallbackInfo ci)
     {
-        if (SmoothMovement.extraTicks > 0)
+        if (ServerTime.extraTicks > 0 && CommonConfiguration.config.getCommonConfig().enableSkyLagAdjustedMovement)
         {
-            setDayTime(getDayTime() + SmoothMovement.extraTicks);
+            setDayTime(getDayTime() + ServerTime.extraTicks);
         }
     }
 }

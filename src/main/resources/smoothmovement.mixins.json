@@ -6,18 +6,19 @@
   "mixinPriority": 2000,
   "mixins": [
     "item.ServerItemEntityMixin",
-    "livingentity.ClientEntityMovementMixin",
-    "livingentity.LivingEntityServerMixin",
-    "livingentity.LookControlMixin",
-    "livingentity.MoveControlMixin",
+    "livingentity.ServerLivingEntityMixin",
+    "livingentity.ServerLookControlMixin",
+    "livingentity.ServerMoveControlMixin",
     "nonliving.ServerExperienceOrbMixin",
     "nonliving.ServerFallingBlockMixin",
     "nonliving.ServerProjectileMixin",
+    "player.ServerGamePacketListenerImplMixin",
     "server.EntityPosSyncFix",
     "time.ServerLevelDayTimeMixin",
     "time.ServerTickMixin"
   ],
   "client": [
+    "livingentity.ClientEntityMovementMixin",
     "item.ClientItemEntityMixin",
     "nonliving.ClientMinecartMixin",
     "time.ClientLevelTimeDeltaMixin",

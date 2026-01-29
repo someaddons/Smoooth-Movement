@@ -1,7 +1,7 @@
 package com.smoothmovement.mixin.time;
 
-import com.smoothmovement.ClientLevelDeltaTime;
-import com.smoothmovement.SmoothMovement;
+import com.smoothmovement.config.CommonConfiguration;
+import com.smoothmovement.time.ClientLevelDeltaTime;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -28,7 +28,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
     @Unique
     private double smoothTickTime = 20.0;
     @Unique
-    private long lastPacketTime = -1;
+    private long   lastPacketTime = -1;
     @Unique
     private double slownessFactor = 1.0;
 
@@ -37,7 +37,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
     @Unique
     private double visualDayTimeSpeed = 1.0;
     @Unique
-    private long lastServerDayTime = -1;
+    private long   lastServerDayTime  = -1;
 
     protected ClientLevelTimeDeltaMixin(
         final WritableLevelData p_270739_,
@@ -82,14 +82,8 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
         smoothTickTime += (gameTimeDiff - smoothTickTime) * adjustment;
 
         smoothTickTime = Mth.clamp(smoothTickTime, 20.0f, 120.0f);
-        SmoothMovement.LOGGER.warn("RAW:" + timeSinceLastPacket + " smooth:" + smoothTickTime);
-
-        lastPacketTime = newGameTime;
 
         slownessFactor = smoothTickTime / 20.0;
-
-
-        // TODO: Add slowness factor for daytime too(can be made faster by the server)
 
         if (visualDayTime == 0)
         {
@@ -114,10 +108,15 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
     @Override
     public float getTimeOfDay(float partialTick)
     {
+        if (!CommonConfiguration.config.getCommonConfig().enableSkySmoothing)
+        {
+            return super.getTimeOfDay(partialTick);
+        }
+
         double time = visualDayTime + partialTick * visualDayTimeSpeed;
         double d0 = Mth.frac(time / 24000.0D - 0.25D);
         double d1 = 0.5D - Math.cos(d0 * Math.PI) / 2.0D;
-        float smoothTimeValue = (float)(d0 * 2.0D + d1) / 3.0F;
+        float smoothTimeValue = (float) (d0 * 2.0D + d1) / 3.0F;
 
         float dimensionValue = this.dimensionType().timeOfDay((long) time);
         if (Math.abs(smoothTimeValue - dimensionValue) > 0.01)
