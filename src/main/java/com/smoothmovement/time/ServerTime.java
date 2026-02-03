@@ -39,7 +39,7 @@ public class ServerTime
     public static void onTick(final long[] tickTimes, final int tickCount)
     {
         final double lastTickMs = tickTimes[tickCount % 100] * 1.0E-6D;
-        if (lastTickMs > 50)
+        if (lastTickMs > 50 && tickCount > 200)
         {
             slownessFactor = (float) Mth.clamp(lastTickMs / 50, 1.0D, 10.0D);
 

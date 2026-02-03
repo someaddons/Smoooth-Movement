@@ -29,6 +29,7 @@ public class CommonConfiguration implements ICommonConfig
     public boolean enableLivingEntityLagAdjustedMovement = true;
 
     public boolean enableMinecartSmoothing           = true;
+    public boolean enableMinecartLagAdjustedMovement           = true;
 
     public boolean enableExpOrbLagAdjustedMovement = true;
 
@@ -66,6 +67,8 @@ public class CommonConfiguration implements ICommonConfig
         final JsonObject entry3 = new JsonObject();
         entry3.addProperty(DESC_CLIENT, "Smooths minecart movement on the client during server or network lag. Default: true");
         entry3.addProperty(ENABLE_CLIENT, enableMinecartSmoothing);
+        entry3.addProperty(DESC_SEVER, "Compensates minecart movement on the server during low TPS to preserve vanilla physics behavior. Default: true");
+        entry3.addProperty(ENABLE_SERVER, enableMinecartLagAdjustedMovement);
         root.add(MINECART_MOVEMENT, entry3);
 
         final JsonObject entry4 = new JsonObject();
@@ -107,6 +110,7 @@ public class CommonConfiguration implements ICommonConfig
         enableLivingEntityLagAdjustedMovement = data.get(ENTITY_MOVEMENT).getAsJsonObject().get(ENABLE_SERVER).getAsBoolean();
 
         enableMinecartSmoothing = data.get(MINECART_MOVEMENT).getAsJsonObject().get(ENABLE_CLIENT).getAsBoolean();
+        enableMinecartLagAdjustedMovement = data.get(MINECART_MOVEMENT).getAsJsonObject().get(ENABLE_SERVER).getAsBoolean();
 
         enableExpOrbLagAdjustedMovement = data.get(EXPERIENCE_ORB_MOVEMENT).getAsJsonObject().get(ENABLE_SERVER).getAsBoolean();
 

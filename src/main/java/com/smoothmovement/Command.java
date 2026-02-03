@@ -32,20 +32,20 @@ public class Command
                                     .withStyle(ChatFormatting.RED));
 
                             return 1;
-                        })
-                    .then(
-                        Commands.literal("stopArtificialLag")
-                            .requires(stack -> stack.hasPermission(2))
-                            .executes(context ->
-                            {
-                                ServerTime.artificialLagTPS = -1;
+                        })))
+            .then(
+                Commands.literal("stopArtificialLag")
+                    .requires(stack -> stack.hasPermission(2))
+                    .executes(context ->
+                    {
+                        ServerTime.artificialLagTPS = -1;
 
-                                context.getSource()
-                                    .sendSystemMessage(Component.literal("Disabled artifical lag")
-                                        .withStyle(ChatFormatting.GREEN));
+                        context.getSource()
+                            .sendSystemMessage(Component.literal("Disabled artifical lag")
+                                .withStyle(ChatFormatting.GREEN));
 
-                                return 1;
-                            })
-                    )));
+                        return 1;
+                    })
+            );
     }
 }

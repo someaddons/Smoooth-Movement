@@ -1,9 +1,14 @@
 package com.smoothmovement.mixin.nonliving;
 
+import com.mojang.datafixers.util.Pair;
+import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ClientLevelDeltaTime;
-import com.smoothmovement.SmoothMovement;
+import com.smoothmovement.time.ServerTime;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -12,14 +17,17 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.extensions.IForgeAbstractMinecart;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
 
 @Mixin(AbstractMinecart.class)
 public abstract class ClientMinecartMixin extends Entity implements IForgeAbstractMinecart
@@ -45,6 +53,10 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
     @Shadow
     protected abstract void moveAlongTrack(final BlockPos p_38156_, final BlockState p_38157_);
 
+    @Shadow
+    @Final
+    private static Map<RailShape, Pair<Vec3i, Vec3i>> EXITS;
+
     public ClientMinecartMixin(final EntityType<?> p_19870_, final Level p_19871_)
     {
         super(p_19870_, p_19871_);
@@ -66,22 +78,20 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
             return;
         }
 
+        lSteps = 0;
         if (teleport || SmoothMovement.getDistanceSquared(x, y, z, getX(), getY(), getZ()) > 10 * 10)
         {
-            lSteps = 0;
             setPos(x, y, z);
             return;
         }
 
         //level().addParticle(ParticleTypes.HAPPY_VILLAGER, x, y, z, 0, 0, 0);
 
-        lSteps = 0;
-
         if (level().getBlockState(BlockPos.containing(x, y, z)).is(BlockTags.RAILS))
         {
             lSteps = (int) Math.max(5, Math.min(100, Math.round(5 * (deltaLevel.getSlownessFactor())))) * 2;
         }
-        velocityLerpSteps = (int) Math.max(3, Math.min(30, Math.round(3 * (deltaLevel.getSlownessFactor()))));
+        velocityLerpSteps = (int) Math.max(3, Math.min(30, Math.round(5 * (deltaLevel.getSlownessFactor()))));
 
         if (!isAlive())
         {

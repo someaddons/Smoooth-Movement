@@ -11,6 +11,7 @@
     "livingentity.ServerMoveControlMixin",
     "nonliving.ServerExperienceOrbMixin",
     "nonliving.ServerFallingBlockMixin",
+    "nonliving.ServerMinecartMixin",
     "nonliving.ServerProjectileMixin",
     "player.ServerGamePacketListenerImplMixin",
     "server.EntityPosSyncFix",
@@ -18,8 +19,8 @@
     "time.ServerTickMixin"
   ],
   "client": [
-    "livingentity.ClientEntityMovementMixin",
     "item.ClientItemEntityMixin",
+    "livingentity.ClientEntityMovementMixin",
     "nonliving.ClientMinecartMixin",
     "time.ClientLevelTimeDeltaMixin",
     "time.GametimePacketListenerMixin"
