@@ -53,7 +53,7 @@ public class CommonConfiguration implements ICommonConfig
         final JsonObject entry = new JsonObject();
         entry.addProperty(DESC_CLIENT, "Smooths item movement on the client during server or network lag. Default:true");
         entry.addProperty(ENABLE_CLIENT, enableItemSmoothing);
-        entry.addProperty(DESC_SEVER, "Compensates item movement on the server during low TPS to preserve vanilla travel distance. Default: true");
+        entry.addProperty(DESC_SEVER, "Compensates item movement on the server during low TPS to preserve vanilla behaviour. Default: true");
         entry.addProperty(ENABLE_SERVER, enableItemLagAdjustedMovement);
         root.add(ITEM_MOVEMENT, entry);
 
