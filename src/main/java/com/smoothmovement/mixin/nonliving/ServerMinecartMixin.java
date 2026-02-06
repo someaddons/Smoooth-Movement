@@ -36,7 +36,7 @@ public abstract class ServerMinecartMixin extends Entity implements IForgeAbstra
             return defaultValue;
         }
 
-        if (ServerTime.slownessFactor <= 1.0)
+        if (!ServerTime.hasLag())
         {
             return defaultValue;
         }
@@ -72,7 +72,7 @@ public abstract class ServerMinecartMixin extends Entity implements IForgeAbstra
     @ModifyConstant(method = "moveAlongTrack", constant = @Constant(doubleValue = 0.06D))
     private double adjustValue(final double constant)
     {
-        if (level().isClientSide || ServerTime.slownessFactor <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartLagAdjustedMovement)
+        if (level().isClientSide || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableMinecartLagAdjustedMovement)
         {
             return constant;
         }
@@ -83,7 +83,7 @@ public abstract class ServerMinecartMixin extends Entity implements IForgeAbstra
     @ModifyConstant(method = "moveAlongTrack", constant = @Constant(doubleValue = 0.02D))
     private double adjustValue2(final double constant)
     {
-        if (level().isClientSide || ServerTime.slownessFactor <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartLagAdjustedMovement)
+        if (level().isClientSide || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableMinecartLagAdjustedMovement)
         {
             return constant;
         }
@@ -93,7 +93,7 @@ public abstract class ServerMinecartMixin extends Entity implements IForgeAbstra
     @ModifyConstant(method = "moveAlongTrack", constant = @Constant(doubleValue = -0.02D))
     private double adjustValue3(final double constant)
     {
-        if (level().isClientSide || ServerTime.slownessFactor <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartLagAdjustedMovement)
+        if (level().isClientSide || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableMinecartLagAdjustedMovement)
         {
             return constant;
         }

@@ -31,6 +31,15 @@ public class ServerTime
     public static int artificialLagBaseMS = 50;
 
     /**
+     * Check if the server is lagging
+     * @return
+     */
+    public static boolean hasLag()
+    {
+        return slownessFactor > 1.0f;
+    }
+
+    /**
      * On servertick estimate lag
      *
      * @param tickTimes serverticktimes
