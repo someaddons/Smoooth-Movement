@@ -98,7 +98,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
         double serverTimeSpeed = (double) elapsedServerDayTime / timeSinceLastPacket;
         visualDayTimeSpeed = visualDayTimeSpeed * 0.8 + serverTimeSpeed * 0.2;
 
-        if (Math.abs(visualDayTime - serverDayTime) > 2400)
+        if (Math.abs(visualDayTime - serverDayTime) > 600)
         {
             visualDayTimeSpeed = 1.0;
             visualDayTime = serverDayTime;
