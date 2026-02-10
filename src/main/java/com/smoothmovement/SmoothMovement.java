@@ -3,6 +3,7 @@ package com.smoothmovement;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,19 +15,11 @@ public class SmoothMovement
 {
     public static final String MODID  = "smoothmovement";
     public static final Logger LOGGER = LogManager.getLogger();
-    public static double TEST     = 0.8;
     public static       Random rand   = new Random();
-
-    // TODO: Comparison video with:
-    // - Sheep follow wheat
-    // - Throw item
-    // - Nightsky moon
-    // - Minecart circle
-    // - Visible TPS graph
-    // - Ender pearl throwing
 
     public SmoothMovement()
     {
+        Compat.hourglass = FMLLoader.getLoadingModList().getModFileById("hourglass") != null || FMLLoader.getLoadingModList().getModFileById("betterdays") != null;
         Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(this::commandRegister);
     }
 

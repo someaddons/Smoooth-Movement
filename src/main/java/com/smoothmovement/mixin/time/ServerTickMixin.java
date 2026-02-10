@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -25,7 +26,7 @@ public abstract class ServerTickMixin
     @Inject(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;getNanos()J", shift = At.Shift.AFTER, ordinal = 0))
     private void onServerTick(final BooleanSupplier p_129871_, final CallbackInfo ci)
     {
-        ServerTime.onTick(tickTimes, getTickCount());
+        ServerTime.onTick((MinecraftServer) (Object)this,tickTimes, getTickCount());
 
         if (ServerTime.artificialLagTPS > 0)
         {

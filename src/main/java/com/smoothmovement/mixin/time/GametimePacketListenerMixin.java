@@ -1,8 +1,11 @@
 package com.smoothmovement.mixin.time;
 
+import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.time.ClientLevelDeltaTime;
+import com.smoothmovement.time.ServerTime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,5 +25,16 @@ public class GametimePacketListenerMixin
     private void onSetGameTime(final ClientboundSetTimePacket packet, final CallbackInfo ci)
     {
         ((ClientLevelDeltaTime) minecraft.level).onTimePacket(packet.getGameTime(), packet.getDayTime());
+    }
+
+    @Inject(method = "handleSetScore", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getScoreboard()Lnet/minecraft/world/scores/Scoreboard;"), cancellable = true)
+    private void onSetGameTime(final ClientboundSetScorePacket packet, final CallbackInfo ci)
+    {
+        if (packet.getOwner().equals(SmoothMovement.MODID) && ServerTime.SCOREBOARD_TPS.equals(packet.getObjectiveName())
+            && minecraft.level instanceof ClientLevelDeltaTime clientLevelDeltaTime)
+        {
+            clientLevelDeltaTime.onScoreBoardPacket(packet.getScore());
+            ci.cancel();
+        }
     }
 }
