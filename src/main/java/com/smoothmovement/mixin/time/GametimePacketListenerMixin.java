@@ -24,7 +24,7 @@ public class GametimePacketListenerMixin
     @Inject(method = "handleSetTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;setGameTime(J)V"))
     private void onSetGameTime(final ClientboundSetTimePacket packet, final CallbackInfo ci)
     {
-        ((ClientLevelDeltaTime) minecraft.level).onTimePacket(packet.getGameTime(), packet.getDayTime());
+        ((ClientLevelDeltaTime) minecraft.level).onTimePacket(packet.getGameTime(), packet.getDayTime() < 0 ? -packet.getDayTime() : packet.getDayTime());
     }
 
     @Inject(method = "handleSetScore", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getScoreboard()Lnet/minecraft/world/scores/Scoreboard;"), cancellable = true)
