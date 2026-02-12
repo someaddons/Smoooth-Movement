@@ -6,6 +6,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.util.Mth;
 
+import java.util.Optional;
+
 public class ServerTime
 {
     public static final String SCOREBOARD_TPS = "smoothmovementtps";
@@ -70,6 +72,7 @@ public class ServerTime
         {
             // Reset to default
             slownessFactor = 1.0f;
+            averageSlownessFactor = 1.0f;
             extraTickTotal = 0;
             extraTicks = 0;
         }
@@ -78,7 +81,7 @@ public class ServerTime
         if (packetCounter++ == 20)
         {
             server.getPlayerList()
-                .broadcastAll(new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, SCOREBOARD_TPS, SmoothMovement.MODID, Math.round(20 / averageSlownessFactor)));
+                .broadcastAll(new ClientboundSetScorePacket(SmoothMovement.MODID, SCOREBOARD_TPS, Math.round(20 / averageSlownessFactor), Optional.empty(), Optional.empty()));
             packetCounter = 0;
         }
     }

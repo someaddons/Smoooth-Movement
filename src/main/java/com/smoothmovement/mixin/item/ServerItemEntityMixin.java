@@ -1,5 +1,8 @@
 package com.smoothmovement.mixin.item;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.world.entity.Entity;
@@ -9,7 +12,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
 public abstract class ServerItemEntityMixin extends Entity
@@ -30,7 +35,7 @@ public abstract class ServerItemEntityMixin extends Entity
         return org.scale(ServerTime.slownessFactor);
     }
 
-    @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;", ordinal = 0), index = 1)
+    @ModifyReturnValue(method = "getDefaultGravity", at = @At("RETURN"))
     private double changeGravity(final double gravity)
     {
         if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)

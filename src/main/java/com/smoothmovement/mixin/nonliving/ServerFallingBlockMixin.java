@@ -1,5 +1,6 @@
 package com.smoothmovement.mixin.nonliving;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.world.entity.Entity;
@@ -30,7 +31,7 @@ public abstract class ServerFallingBlockMixin extends Entity
         return org.scale(ServerTime.slownessFactor);
     }
 
-    @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;", ordinal = 0), index = 1)
+    @ModifyReturnValue(method = "getDefaultGravity", at = @At("RETURN"))
     private double changeGravity(final double gravity)
     {
         if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableFallingBlockLagAdjustedMovement)

@@ -22,7 +22,7 @@ public class Command
                         {
                             if (ServerTime.artificialLagTPS == -1)
                             {
-                                ServerTime.artificialLagBaseMS = Math.max(0, 50 - (int) context.getSource().getLevel().getServer().getAverageTickTime());
+                                ServerTime.artificialLagBaseMS = Math.max(0, 50 - (int) context.getSource().getLevel().getServer().getAverageTickTimeNanos());
                             }
 
                             ServerTime.artificialLagTPS = IntegerArgumentType.getInteger(context, "tps");

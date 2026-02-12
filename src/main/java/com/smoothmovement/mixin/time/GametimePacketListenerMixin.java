@@ -4,6 +4,7 @@ import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.time.ClientLevelDeltaTime;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
@@ -17,23 +18,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPacketListener.class)
 public class GametimePacketListenerMixin
 {
-    @Shadow
-    @Final
-    private Minecraft minecraft;
+    @Shadow private ClientLevel level;
 
     @Inject(method = "handleSetTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;setGameTime(J)V"))
     private void onSetGameTime(final ClientboundSetTimePacket packet, final CallbackInfo ci)
     {
-        ((ClientLevelDeltaTime) minecraft.level).onTimePacket(packet.getGameTime(), packet.getDayTime() < 0 ? -packet.getDayTime() : packet.getDayTime());
+        ((ClientLevelDeltaTime) level).onTimePacket(packet.getGameTime(), packet.getDayTime() < 0 ? -packet.getDayTime() : packet.getDayTime());
     }
 
-    @Inject(method = "handleSetScore", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getScoreboard()Lnet/minecraft/world/scores/Scoreboard;"), cancellable = true)
+    @Inject(method = "handleSetScore", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundSetScorePacket;objectiveName()Ljava/lang/String;"), cancellable = true)
     private void onSetGameTime(final ClientboundSetScorePacket packet, final CallbackInfo ci)
     {
-        if (packet.getOwner().equals(SmoothMovement.MODID) && ServerTime.SCOREBOARD_TPS.equals(packet.getObjectiveName())
-            && minecraft.level instanceof ClientLevelDeltaTime clientLevelDeltaTime)
+        if (packet.owner().equals(SmoothMovement.MODID) && ServerTime.SCOREBOARD_TPS.equals(packet.objectiveName())
+            && level instanceof ClientLevelDeltaTime clientLevelDeltaTime)
         {
-            clientLevelDeltaTime.onScoreBoardPacket(packet.getScore());
+            clientLevelDeltaTime.onScoreBoardPacket(packet.score());
             ci.cancel();
         }
     }

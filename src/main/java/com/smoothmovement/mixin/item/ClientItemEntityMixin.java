@@ -26,7 +26,9 @@ public abstract class ClientItemEntityMixin extends Entity
     private double lerpY;
     @Unique
     private int    positionDelayTicks;
+    @Unique
     private float  lerpYRot;
+    @Unique
     private float  lerpXRot;
 
     public ClientItemEntityMixin(final EntityType<?> p_19870_, final Level p_19871_)
@@ -38,11 +40,11 @@ public abstract class ClientItemEntityMixin extends Entity
     }
 
     @Override
-    public void lerpTo(double x, double y, double z, float yRot, float xRot, int p_19901_, boolean p_19902_)
+    public void lerpTo(double x, double y, double z, float yRot, float xRot, int p_19901_)
     {
         if (!CommonConfiguration.config.getCommonConfig().enableItemSmoothing)
         {
-            super.lerpTo(x, y, z, yRot, xRot, p_19901_, p_19902_);
+            super.lerpTo(x, y, z, yRot, xRot, p_19901_);
             return;
         }
 

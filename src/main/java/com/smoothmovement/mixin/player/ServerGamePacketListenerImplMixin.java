@@ -1,5 +1,7 @@
 package com.smoothmovement.mixin.player;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -24,8 +26,8 @@ public class ServerGamePacketListenerImplMixin
         return ServerTime.slownessFactor * constant;
     }
 
-    @Redirect(method = "handleMovePlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;lengthSqr()D"), require = 0)
-    private double scalePlayerMovement(Vec3 instance)
+    @WrapOperation(method = "handleMovePlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;lengthSqr()D"), require = 0)
+    private double scalePlayerMovement(final Vec3 instance, final Operation<Double> original)
     {
         if (!CommonConfiguration.config.getCommonConfig().enableRubberbandingLagAdjustedMovement)
         {

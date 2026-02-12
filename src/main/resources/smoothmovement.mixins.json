@@ -5,8 +5,8 @@
   "refmap": "smoothmovement.refmap.json",
   "mixinPriority": 2000,
   "mixins": [
-    "compat.HourGlass",
-    "compat.HourGlassServer",
+    "compat.BetterDays",
+    "compat.BetterDaysServer",
     "item.ServerItemEntityMixin",
     "livingentity.ServerLivingEntityMixin",
     "livingentity.ServerLookControlMixin",
@@ -16,7 +16,7 @@
     "nonliving.ServerMinecartMixin",
     "nonliving.ServerProjectileMixin",
     "player.ServerGamePacketListenerImplMixin",
-    "server.EntityPosSyncFix",
+    "time.NeoforgeTimePacketMixin",
     "time.ServerLevelDayTimeMixin",
     "time.ServerTickMixin"
   ],

@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
-import net.minecraftforge.common.extensions.IForgeAbstractMinecart;
+import net.neoforged.neoforge.common.extensions.IAbstractMinecartExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(AbstractMinecart.class)
-public abstract class ServerMinecartMixin extends Entity implements IForgeAbstractMinecart
+public abstract class ServerMinecartMixin extends Entity implements IAbstractMinecartExtension
 {
     public ServerMinecartMixin(final EntityType<?> p_19870_, final Level p_19871_)
     {

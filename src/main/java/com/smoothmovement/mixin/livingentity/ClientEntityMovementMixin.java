@@ -61,7 +61,6 @@ public abstract class ClientEntityMovementMixin extends Entity
         final float p_20980_,
         final float p_20981_,
         final int steps,
-        final boolean teleport,
         final CallbackInfo ci)
     {
          if (!CommonConfiguration.config.getCommonConfig().enableLivingEntitySmoothing)

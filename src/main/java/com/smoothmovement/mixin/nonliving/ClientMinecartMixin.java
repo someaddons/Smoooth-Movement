@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.extensions.IForgeAbstractMinecart;
+import net.neoforged.neoforge.common.extensions.IAbstractMinecartExtension;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,20 +30,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 @Mixin(AbstractMinecart.class)
-public abstract class ClientMinecartMixin extends Entity implements IForgeAbstractMinecart
+public abstract class ClientMinecartMixin extends Entity implements IAbstractMinecartExtension
 {
-    @Shadow
-    private int lSteps;
-
-    @Shadow
-    private double lx;
-
-    @Shadow
-    private double lz;
-
-    @Shadow
-    private double ly;
-
     @Shadow
     private boolean onRails;
 
@@ -57,12 +45,20 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
     @Final
     private static Map<RailShape, Pair<Vec3i, Vec3i>> EXITS;
 
+    @Shadow private int lerpSteps;
+
+    @Shadow private double lerpX;
+
+    @Shadow private double lerpZ;
+
+    @Shadow private double lerpY;
+
     public ClientMinecartMixin(final EntityType<?> p_19870_, final Level p_19871_)
     {
         super(p_19870_, p_19871_);
     }
 
-    @Inject(method = "lerpTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/vehicle/AbstractMinecart;setDeltaMovement(DDD)V"), cancellable = true)
+    @Inject(method = "lerpTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/vehicle/AbstractMinecart;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"), cancellable = true)
     private void onPosLerp(
         final double x,
         final double y,
@@ -70,7 +66,6 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
         final float p_20980_,
         final float p_20981_,
         final int steps,
-        final boolean teleport,
         final CallbackInfo ci)
     {
         if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing)
@@ -78,8 +73,8 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
             return;
         }
 
-        lSteps = 0;
-        if (teleport || SmoothMovement.getDistanceSquared(x, y, z, getX(), getY(), getZ()) > 10 * 10)
+        lerpSteps = 0;
+        if (SmoothMovement.getDistanceSquared(x, y, z, getX(), getY(), getZ()) > 10 * 10)
         {
             setPos(x, y, z);
             return;
@@ -89,18 +84,18 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
 
         if (level().getBlockState(BlockPos.containing(x, y, z)).is(BlockTags.RAILS))
         {
-            lSteps = (int) Math.max(5, Math.min(100, Math.round(5 * (deltaLevel.getSlownessFactor())))) * 2;
+            lerpSteps = (int) Math.max(5, Math.min(100, Math.round(5 * (deltaLevel.getSlownessFactor())))) * 2;
         }
         velocityLerpSteps = (int) Math.max(3, Math.min(30, Math.round(5 * (deltaLevel.getSlownessFactor()))));
 
         if (!isAlive())
         {
-            lx = getX();
-            lz = getZ();
+            lerpX = getX();
+            lerpZ = getZ();
 
-            if (ly > getY())
+            if (lerpY > getY())
             {
-                ly = getY();
+                lerpY = getY();
             }
         }
         ci.cancel();
@@ -141,7 +136,7 @@ public abstract class ClientMinecartMixin extends Entity implements IForgeAbstra
             return;
         }
 
-        Vec3 diff = position().subtract(new Vec3(lx, ly, lz)).reverse().multiply(1.0 / velocityLerpSteps, 1.0 / velocityLerpSteps, 1.0 / velocityLerpSteps);
+        Vec3 diff = position().subtract(new Vec3(lerpX, lerpY, lerpZ)).reverse().multiply(1.0 / velocityLerpSteps, 1.0 / velocityLerpSteps, 1.0 / velocityLerpSteps);
 
         if (diff.x < 0 && getDeltaMovement().x >= 0
             || diff.x > 0 && getDeltaMovement().x <= 0)
