@@ -1,27 +1,23 @@
 package com.smoothmovement.mixin.compat;
 
+import betterdays.client.TimeInterpolator;
 import com.smoothmovement.config.CommonConfiguration;
-import net.lavabucket.hourglass.client.TimeInterpolator;
-import net.lavabucket.hourglass.wrappers.ClientLevelWrapper;
-import net.minecraftforge.event.TickEvent;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = TimeInterpolator.class, remap = false)
-public abstract class HourGlass
+public abstract class BetterDays
 {
     /**
      * Cancel clientside updates in favor of smoothmovements
      *
-     * @param event
      * @param ci
      */
-    @Inject(method = "onRenderTickEvent", at = @At("HEAD"), cancellable = true)
-    private static void cancelEvent(final TickEvent.RenderTickEvent event, final CallbackInfo ci)
+    @Inject(method = "onRenderTickEvent", at = @At("HEAD"), cancellable = true, require = 0)
+    private static void cancelEvent(final float renderTickTime, final CallbackInfo ci)
     {
         if (CommonConfiguration.config.getCommonConfig().enableSkySmoothing)
         {
@@ -32,11 +28,10 @@ public abstract class HourGlass
     /**
      * Cancel clientside updates in favor of smoothmovements
      *
-     * @param event
      * @param ci
      */
-    @Inject(method = "OnClientTickEvent", at = @At("HEAD"), cancellable = true)
-    private static void cancelEventTick(final TickEvent.ClientTickEvent event, final CallbackInfo ci)
+    @Inject(method = "onClientTickEvent", at = @At("HEAD"), cancellable = true, require = 0)
+    private static void cancelEventTick(final Minecraft minecraft, final CallbackInfo ci)
     {
         if (CommonConfiguration.config.getCommonConfig().enableSkySmoothing)
         {
