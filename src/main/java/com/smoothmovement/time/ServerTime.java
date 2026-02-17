@@ -70,6 +70,7 @@ public class ServerTime
         {
             // Reset to default
             slownessFactor = 1.0f;
+            averageSlownessFactor = 1.0f;
             extraTickTotal = 0;
             extraTicks = 0;
         }
