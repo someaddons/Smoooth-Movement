@@ -5,7 +5,6 @@
   "refmap": "smoothmovement.refmap.json",
   "mixinPriority": 2000,
   "mixins": [
-    "compat.BetterDays",
     "compat.BetterDaysServer",
     "item.ServerItemEntityMixin",
     "livingentity.ServerLivingEntityMixin",
@@ -16,16 +15,17 @@
     "nonliving.ServerMinecartMixin",
     "nonliving.ServerProjectileMixin",
     "player.ServerGamePacketListenerImplMixin",
-    "time.NeoforgeTimePacketMixin",
     "time.ServerLevelDayTimeMixin",
     "time.ServerTickMixin"
   ],
   "client": [
+    "compat.BetterDays",
     "item.ClientItemEntityMixin",
     "livingentity.ClientEntityMovementMixin",
     "nonliving.ClientMinecartMixin",
     "time.ClientLevelTimeDeltaMixin",
-    "time.GametimePacketListenerMixin"
+    "time.GametimePacketListenerMixin",
+    "time.NeoforgeTimePacketMixin"
   ],
   "server": [
 
