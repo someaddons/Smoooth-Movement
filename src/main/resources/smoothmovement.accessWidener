@@ -1,0 +1,8 @@
+accessWidener   v2  named
+mutable field net/minecraft/network/protocol/game/ClientboundAddEntityPacket x D
+accessible field net/minecraft/network/protocol/game/ClientboundAddEntityPacket x D
+mutable field net/minecraft/network/protocol/game/ClientboundAddEntityPacket y D
+accessible field net/minecraft/network/protocol/game/ClientboundAddEntityPacket y D
+mutable field net/minecraft/network/protocol/game/ClientboundAddEntityPacket z D
+accessible field net/minecraft/network/protocol/game/ClientboundAddEntityPacket z D
+accessible field net/minecraft/network/protocol/game/VecDeltaCodec base Lnet/minecraft/world/phys/Vec3;

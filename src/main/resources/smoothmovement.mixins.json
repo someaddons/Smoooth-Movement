@@ -7,8 +7,6 @@
   "mixins": [
     "compat.BetterDays",
     "compat.BetterDaysServer",
-    "compat.HourGlass",
-    "compat.HourGlassServer",
     "item.ServerItemEntityMixin",
     "livingentity.ServerLivingEntityMixin",
     "livingentity.ServerLookControlMixin",

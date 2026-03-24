@@ -4,6 +4,7 @@ import com.smoothmovement.Compat;
 import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ClientLevelDeltaTime;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -13,7 +14,6 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.WritableLevelData;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -173,7 +173,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
 
         if (serversideSmoothMovement)
         {
-            if (!FMLEnvironment.production && Math.abs((20.0 / slownessFactor) - serverTPS) > 2)
+            if (FabricLoader.getInstance().isDevelopmentEnvironment() && Math.abs((20.0 / slownessFactor) - serverTPS) > 2)
             {
                 SmoothMovement.LOGGER.warn("large tps diff! client:" + (20.0 / slownessFactor) + " server:" + serverTPS);
             }

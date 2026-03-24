@@ -1,17 +1,15 @@
 package com.smoothmovement;
 
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(SmoothMovement.MODID)
-public class SmoothMovement
+public class SmoothMovement implements ModInitializer
 {
     public static final String MODID  = "smoothmovement";
     public static final Logger LOGGER = LogManager.getLogger();
@@ -19,14 +17,7 @@ public class SmoothMovement
 
     public SmoothMovement()
     {
-        Compat.hourglass = FMLLoader.getLoadingModList().getModFileById("hourglass") != null || FMLLoader.getLoadingModList().getModFileById("betterdays") != null;
-        Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(this::commandRegister);
-    }
-
-    @SubscribeEvent
-    public void commandRegister(RegisterCommandsEvent event)
-    {
-        event.getDispatcher().register(new Command().build(event.getBuildContext()));
+        Compat.hourglass = FabricLoader.getInstance().isModLoaded("hourglass") || FabricLoader.getInstance().isModLoaded("betterdays");
     }
 
     public static double getDistanceSquared(final double x1, final double y1, final double z1, final double x2, final double y2, final double z2)
@@ -36,5 +27,14 @@ public class SmoothMovement
         final double zDiff = z1 - z2;
 
         return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
+    }
+
+    @Override
+    public void onInitialize()
+    {
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, c) ->
+        {
+            dispatcher.register(new Command().build(dedicated));
+        });
     }
 }
