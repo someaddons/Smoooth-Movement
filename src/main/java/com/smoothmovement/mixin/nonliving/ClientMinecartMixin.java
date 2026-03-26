@@ -4,11 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ClientLevelDeltaTime;
-import com.smoothmovement.time.ServerTime;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -19,18 +16,18 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.extensions.IAbstractMinecartExtension;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
 
 @Mixin(AbstractMinecart.class)
-public abstract class ClientMinecartMixin extends Entity implements IAbstractMinecartExtension
+public abstract class ClientMinecartMixin extends Entity
 {
     @Shadow
     private boolean onRails;
@@ -177,7 +174,7 @@ public abstract class ClientMinecartMixin extends Entity implements IAbstractMin
         BlockPos blockpos = new BlockPos(k, i, j);
         BlockState blockstate = this.level().getBlockState(blockpos);
         this.onRails = BaseRailBlock.isRail(blockstate);
-        if (canUseRail() && this.onRails)
+        if (this.onRails)
         {
             this.moveAlongTrack(blockpos, blockstate);
         }
