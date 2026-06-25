@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "template",
+  "id": "smoothmovement",
   "version": "${version}",
 
-  "name": "Template Mod",
+  "name": "Smoothmovement Mod",
   "description": "",
   "authors": [
     ""

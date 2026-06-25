@@ -2,10 +2,8 @@
   "required": false,
   "package": "com.smoothmovement.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "smoothmovement.refmap.json",
   "mixinPriority": 2000,
   "mixins": [
-    "compat.BetterDays",
     "compat.BetterDaysServer",
     "item.ServerItemEntityMixin",
     "livingentity.ServerLivingEntityMixin",
@@ -21,6 +19,7 @@
     "time.ServerTickMixin"
   ],
   "client": [
+    "compat.BetterDays",
     "item.ClientItemEntityMixin",
     "livingentity.ClientEntityMovementMixin",
     "nonliving.ClientMinecartMixin",
