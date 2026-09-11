@@ -18,6 +18,7 @@ public class SmoothMovement implements ModInitializer
     public SmoothMovement()
     {
         Compat.hourglass = FabricLoader.getInstance().isModLoaded("hourglass") || FabricLoader.getInstance().isModLoaded("betterdays");
+        Compat.genesis = FabricLoader.getInstance().isModLoaded("genesis");
     }
 
     public static double getDistanceSquared(final double x1, final double y1, final double z1, final double x2, final double y2, final double z2)
