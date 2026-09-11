@@ -20,6 +20,7 @@ public class SmoothMovement
     public SmoothMovement()
     {
         Compat.hourglass = FMLLoader.getLoadingModList().getModFileById("hourglass") != null || FMLLoader.getLoadingModList().getModFileById("betterdays") != null;
+        Compat.genesis = FMLLoader.getLoadingModList().getModFileById("genesis") != null;
         Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(this::commandRegister);
     }
 
