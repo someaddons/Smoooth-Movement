@@ -23,6 +23,7 @@ public class SmoothMovement
     public SmoothMovement(IEventBus modEventBus, ModContainer modContainer)
     {
         Compat.hourglass = FMLLoader.getLoadingModList().getModFileById("hourglass") != null || FMLLoader.getLoadingModList().getModFileById("betterdays") != null;
+        Compat.genesis = FMLLoader.getLoadingModList().getModFileById("genesis") != null;
         NeoForge.EVENT_BUS.addListener(this::commandRegister);
     }
 

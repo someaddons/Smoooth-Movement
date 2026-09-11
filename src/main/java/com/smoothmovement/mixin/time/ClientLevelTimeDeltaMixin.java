@@ -206,7 +206,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
     @Override
     public float getTimeOfDay(float partialTick)
     {
-        if (!CommonConfiguration.config.getCommonConfig().enableSkySmoothing)
+        if (!CommonConfiguration.config.getCommonConfig().enableSkySmoothing || Compat.genesis)
         {
             return super.getTimeOfDay(partialTick);
         }
