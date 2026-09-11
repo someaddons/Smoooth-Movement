@@ -65,7 +65,7 @@ public abstract class ClientMinecartMixin extends Entity
         final int steps,
         final CallbackInfo ci)
     {
-        if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing)
+        if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing || !onRails)
         {
             return;
         }
@@ -101,7 +101,7 @@ public abstract class ClientMinecartMixin extends Entity
     @Inject(method = "lerpMotion", at = @At("HEAD"), cancellable = true)
     public void lerpMotion(final double x, final double y, final double z, final CallbackInfo ci)
     {
-        if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing)
+        if (!(level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() <= 1.0 || !CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing || !onRails)
         {
             return;
         }

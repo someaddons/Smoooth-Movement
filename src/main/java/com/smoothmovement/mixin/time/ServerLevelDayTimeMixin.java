@@ -45,9 +45,9 @@ public abstract class ServerLevelDayTimeMixin extends Level
     @Inject(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setDayTime(J)V", shift = At.Shift.AFTER))
     private void adjustDayTime(final CallbackInfo ci)
     {
-        if (ServerTime.extraTicks > 0 && CommonConfiguration.config.getCommonConfig().enableSkyLagAdjustedMovement && !Compat.hourglass)
+        if (ServerTime.extraTicks > 0 && CommonConfiguration.config.getCommonConfig().enableSkyLagAdjustedMovement && !Compat.hourglass && !Compat.genesis)
         {
-            setDayTime(getDayTime() + ServerTime.extraTicks);
+            setDayTime(levelData.getDayTime() + ServerTime.extraTicks);
         }
     }
 }
