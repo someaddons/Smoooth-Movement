@@ -28,7 +28,7 @@
     "nonliving.ClientMinecartMixin",
     "time.ClientLevelTimeDeltaMixin",
     "time.GametimePacketListenerMixin"
-  ]
+  ],
   "injectors": {
     "defaultRequire": 0
   },
