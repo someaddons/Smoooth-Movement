@@ -12,17 +12,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(MoveControl.class)
 public class ServerMoveControlMixin
 {
-    @ModifyVariable(method = "rotlerp", at = @At("HEAD"), ordinal = 2, argsOnly = true)
-    private float adjustSteps(float steps)
-    {
-        if (!CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement)
-        {
-            return steps;
-        }
-
-        return steps * ServerTime.slownessFactor;
-    }
-
     @ModifyConstant(method = "tick", constant = @Constant(doubleValue = 2.500000277905201E-7))
     private double adjustThreshold(final double original)
     {

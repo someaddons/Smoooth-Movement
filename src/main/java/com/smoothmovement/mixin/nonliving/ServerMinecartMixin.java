@@ -68,7 +68,7 @@ public abstract class ServerMinecartMixin extends Entity
             }
         }
 
-        return Math.min(maxSpeed, defaultValue * ServerTime.slownessFactor);
+        return (float) Math.min(maxSpeed, defaultValue * ServerTime.slownessFactor);
     }
 
     @ModifyConstant(method = "moveAlongTrack", constant = @Constant(doubleValue = 0.06D))

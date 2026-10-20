@@ -4,25 +4,23 @@ import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.world.entity.ai.control.LookControl;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(LookControl.class)
 public class ServerLookControlMixin
 {
-    @Shadow protected float xMaxRotAngle;
-
-    @ModifyVariable(method = "rotateTowards", at = @At("HEAD"), ordinal = 2)
-    private float adjustSteps(float steps)
+    /**
+     * Scale rotation step limits, but not the calls which cap the rotation instead
+     */
+    @ModifyArg(method = {"tick", "lambda$tick$0"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/control/LookControl;rotateTowards(FFF)F"), index = 2)
+    private float adjustYawSteps(final float steps)
     {
-        if (steps != xMaxRotAngle && CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement)
-        {
-            return steps * ServerTime.slownessFactor;
-        }
-        else
+        if (!CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement)
         {
             return steps;
         }
+
+        return (float) (steps * ServerTime.slownessFactor);
     }
 }
