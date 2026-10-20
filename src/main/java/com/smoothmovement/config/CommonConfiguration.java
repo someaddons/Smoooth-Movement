@@ -60,7 +60,7 @@ public class CommonConfiguration implements ICommonConfig
         final JsonObject entry2 = new JsonObject();
         entry2.addProperty(DESC_CLIENT, "Smooths living entity movement on the client during server or network lag. Default: true");
         entry2.addProperty(ENABLE_CLIENT, enableLivingEntitySmoothing);
-        entry2.addProperty(DESC_SEVER, "Compensates living entity movement on the server during low TPS to preserve vanilla behavior. Default: true");
+        entry2.addProperty(DESC_SEVER, "Compensates server-controlled living entity movement, jumping and falling during low TPS by integrating acceleration and drag into one movement pass. Excludes players and player-controlled mounts. AI goals and combat timers are unchanged. Default: true");
         entry2.addProperty(ENABLE_SERVER, enableLivingEntityLagAdjustedMovement);
         root.add(ENTITY_MOVEMENT, entry2);
 

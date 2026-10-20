@@ -105,6 +105,11 @@ dependencies {
     implementation fg.deobf("curse.maven:spark-361579:4587309")
     compileOnly fg.deobf("curse.maven:hourglass-511172:4834578")
     compileOnly fg.deobf("curse.maven:betterd-895618:7046761")
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.5"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.5")) {
+        jarJar.ranged(it, "[0.5.5,)")
+    }
 }
 
 jar {
