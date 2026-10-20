@@ -14,12 +14,12 @@ public class ServerTime
     /**
      * Factor of how much slower the last tick was compared to normal
      */
-    public static       float  slownessFactor = 1.0f;
+    public static       double slownessFactor = 1.0;
 
     /**
      * Factor of how much slower the last tick was compared to normal
      */
-    public static float averageSlownessFactor = 1.0f;
+    public static double averageSlownessFactor = 1.0;
 
     /**
      * How many extra ticks are needed to catch up to a normal time interval
@@ -46,7 +46,7 @@ public class ServerTime
      */
     public static boolean hasLag()
     {
-        return slownessFactor > 1.0f;
+        return slownessFactor > 1.0;
     }
 
     /**
@@ -81,7 +81,7 @@ public class ServerTime
         if (packetCounter++ == 20)
         {
             server.getPlayerList()
-                .broadcastAll(new ClientboundSetScorePacket(SmoothMovement.MODID, SCOREBOARD_TPS, Math.round(20 / averageSlownessFactor), Optional.empty(), Optional.empty()));
+                .broadcastAll(new ClientboundSetScorePacket(SmoothMovement.MODID, SCOREBOARD_TPS, (int) Math.round(20 / averageSlownessFactor), Optional.empty(), Optional.empty()));
             packetCounter = 0;
         }
     }
