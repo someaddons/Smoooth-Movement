@@ -9,6 +9,7 @@
     "livingentity.ServerLivingEntityMixin",
     "livingentity.ServerLookControlMixin",
     "livingentity.ServerMoveControlMixin",
+    "livingentity.ServerPathNavigationMixin",
     "nonliving.ServerExperienceOrbMixin",
     "nonliving.ServerFallingBlockMixin",
     "nonliving.ServerMinecartMixin",
