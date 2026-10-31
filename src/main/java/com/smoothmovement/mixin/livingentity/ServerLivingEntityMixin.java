@@ -40,6 +40,9 @@ public abstract class ServerLivingEntityMixin extends Entity
     @Unique
     private double groundDrag;
 
+    @Shadow
+    protected abstract double getEffectiveGravity();
+
     public ServerLivingEntityMixin(final EntityType<?> type, final Level level)
     {
         super(type, level);
@@ -54,7 +57,7 @@ public abstract class ServerLivingEntityMixin extends Entity
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;jumpInFluid(Lnet/neoforged/neoforge/fluids/FluidType;)V"))
     private void smoothmovement$captureFluidJump(final LivingEntity entity, final FluidType fluid, final Operation<Void> original)
     {
-        if (level().isClientSide || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement)
+        if (level().isClientSide() || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement)
         {
             original.call(entity, fluid);
             return;
@@ -69,7 +72,7 @@ public abstract class ServerLivingEntityMixin extends Entity
     private void smoothmovement$beginTravel(final Vec3 input, final CallbackInfo ci)
     {
         slownessFactor = 1.0;
-        if (level().isClientSide || (Object) this instanceof Player || isPassenger() || !isAlive() || !isControlledByLocalInstance() || getControllingPassenger() instanceof Player
+        if (level().isClientSide() || (Object) this instanceof Player || isPassenger() || !isAlive() || !isLocalInstanceAuthoritative() || getControllingPassenger() instanceof Player
             || !CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement || !ServerTime.hasLag())
         {
             return;
@@ -90,7 +93,7 @@ public abstract class ServerLivingEntityMixin extends Entity
         slownessFactor = 1.0;
     }
 
-    @WrapOperation(method = {"travel",
+    @WrapOperation(method = {"travelInWater", "travelInLava",
         "handleRelativeFrictionAndCalculateMovement"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;moveRelative(FLnet/minecraft/world/phys/Vec3;)V"))
     private void smoothmovement$captureAcceleration(final LivingEntity entity, final float speed, final Vec3 input, final Operation<Void> original)
     {
@@ -105,10 +108,10 @@ public abstract class ServerLivingEntityMixin extends Entity
         acceleration = acceleration.add(getDeltaMovement().subtract(before));
     }
 
-    @Inject(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;handleRelativeFrictionAndCalculateMovement(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;"))
-    private void smoothmovement$captureGroundPhysics(final Vec3 input, final CallbackInfo ci, @Local(ordinal = 0) final double gravity, @Local(ordinal = 1) final float drag)
+    @Inject(method = "travelInAir", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;handleRelativeFrictionAndCalculateMovement(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;"))
+    private void smoothmovement$captureGroundPhysics(final Vec3 input, final CallbackInfo ci, @Local(ordinal = 1) final float drag)
     {
-        groundGravity = gravity;
+        groundGravity = getEffectiveGravity();
         groundDrag = ((LivingEntity) (Object) this).shouldDiscardFriction() ? 1.0 : drag;
     }
 
@@ -138,7 +141,7 @@ public abstract class ServerLivingEntityMixin extends Entity
         return smoothmovement$adjustDeltaMovement(movement, acceleration.add(0.0, verticalForce, 0.0), groundDrag, verticalDrag);
     }
 
-    @ModifyArg(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", ordinal = 0), index = 1)
+    @ModifyArg(method = "travelInWater", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", ordinal = 0), index = 1)
     private Vec3 smoothmovement$moveInWater(final Vec3 movement, @Local(ordinal = 0) final double gravity, @Local(ordinal = 0) final float drag)
     {
         if (slownessFactor <= 1.0)
@@ -150,7 +153,7 @@ public abstract class ServerLivingEntityMixin extends Entity
         return smoothmovement$adjustDeltaMovement(movement, acceleration.add(0.0, verticalForce, 0.0), drag, 0.8F);
     }
 
-    @ModifyArg(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", ordinal = 1), index = 1)
+    @ModifyArg(method = "travelInLava", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", ordinal = 0), index = 1)
     private Vec3 smoothmovement$moveInLava(final Vec3 movement, @Local(ordinal = 0) final double gravity)
     {
         if (slownessFactor <= 1.0)
@@ -164,7 +167,7 @@ public abstract class ServerLivingEntityMixin extends Entity
         return smoothmovement$adjustDeltaMovement(movement, acceleration.add(0.0, verticalForce, 0.0), 0.5, verticalDrag);
     }
 
-    @ModifyArg(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", ordinal = 2), index = 1)
+    @ModifyArg(method = "travelFallFlying", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"), index = 1)
     private Vec3 smoothmovement$moveGliding(final Vec3 movement)
     {
         if (slownessFactor <= 1.0)

@@ -22,7 +22,7 @@ public abstract class ServerTickMixin
 
     @Shadow @Final private long[] tickTimesNanos;
 
-    @Inject(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;getNanos()J", shift = At.Shift.AFTER, ordinal = 0))
+    @Inject(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getNanos()J", shift = At.Shift.AFTER, ordinal = 0))
     private void onServerTick(final BooleanSupplier p_129871_, final CallbackInfo ci)
     {
         ServerTime.onTick((MinecraftServer) (Object)this,tickTimesNanos, getTickCount());

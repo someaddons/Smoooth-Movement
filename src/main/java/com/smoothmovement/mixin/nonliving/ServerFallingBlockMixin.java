@@ -23,7 +23,7 @@ public abstract class ServerFallingBlockMixin extends Entity
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/FallingBlockEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"))
     private Vec3 changeVel(final Vec3 org)
     {
-        if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableFallingBlockLagAdjustedMovement)
+        if (level().isClientSide() || !CommonConfiguration.config.getCommonConfig().enableFallingBlockLagAdjustedMovement)
         {
             return org;
         }
@@ -34,7 +34,7 @@ public abstract class ServerFallingBlockMixin extends Entity
     @ModifyReturnValue(method = "getDefaultGravity", at = @At("RETURN"))
     private double changeGravity(final double gravity)
     {
-        if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableFallingBlockLagAdjustedMovement)
+        if (level().isClientSide() || !CommonConfiguration.config.getCommonConfig().enableFallingBlockLagAdjustedMovement)
         {
             return gravity;
         }

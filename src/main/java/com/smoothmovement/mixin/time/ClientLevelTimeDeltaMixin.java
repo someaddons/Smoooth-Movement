@@ -1,15 +1,12 @@
 package com.smoothmovement.mixin.time;
 
-import com.smoothmovement.Compat;
 import com.smoothmovement.SmoothMovement;
-import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ClientLevelDeltaTime;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.WritableLevelData;
@@ -21,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 @Mixin(ClientLevel.class)
 /**
@@ -68,13 +64,12 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
         final ResourceKey<Level> p_270683_,
         final RegistryAccess p_270200_,
         final Holder<DimensionType> p_270240_,
-        final Supplier<ProfilerFiller> p_270692_,
         final boolean p_270904_,
         final boolean p_270470_,
         final long p_270248_,
         final int p_270466_)
     {
-        super(p_270739_, p_270683_, p_270200_, p_270240_, p_270692_, p_270904_, p_270470_, p_270248_, p_270466_);
+        super(p_270739_, p_270683_, p_270200_, p_270240_, p_270904_, p_270470_, p_270248_, p_270466_);
     }
 
     @Override
@@ -90,7 +85,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
     }
 
     @Override
-    public void onTimePacket(long newGameTime, final long serverDayTime)
+    public void onTimePacket(long newGameTime, final long serverDayTime, final float clockRate)
     {
         if (ticksSincePacket == 0)
         {
@@ -103,10 +98,17 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
             onServerPacketCalculateSlowness();
         }
 
-        if (visualDayTime == 0)
+        if (serverDayTime < 0)
+        {
+            return;
+        }
+
+        if (lastServerDayTime == -1)
         {
             visualDayTime = serverDayTime;
             lastServerDayTime = serverDayTime;
+            visualDayTimeSpeed = clockRate / slownessFactor;
+            lastPacketGameTime = newGameTime;
             return;
         }
 
@@ -128,10 +130,14 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
 
         double serverTimeSpeed = (double) elapsedServerDayTime / timeSinceLastPacket;
         visualDayTimeSpeed = visualDayTimeSpeed * 0.8 + serverTimeSpeed * 0.2;
+        if (clockRate == 0)
+        {
+            visualDayTimeSpeed = 0;
+        }
 
         if (Math.abs(visualDayTime - serverDayTime) > 600)
         {
-            visualDayTimeSpeed = 1.0;
+            visualDayTimeSpeed = clockRate / slownessFactor;
             visualDayTime = serverDayTime;
         }
     }
@@ -173,7 +179,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
 
         if (serversideSmoothMovement)
         {
-            if (!FMLEnvironment.production && Math.abs((20.0 / slownessFactor) - serverTPS) > 2)
+            if (!FMLEnvironment.isProduction() && Math.abs((20.0 / slownessFactor) - serverTPS) > 2)
             {
                 SmoothMovement.LOGGER.warn("large tps diff! client:" + (20.0 / slownessFactor) + " server:" + serverTPS);
             }
@@ -197,31 +203,15 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
         ticksSincePacket++;
     }
 
-    @Inject(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;setDayTime(J)V"))
+    @Inject(method = "tickTime", at = @At("TAIL"))
     private void adjustVisualTime(final CallbackInfo ci)
     {
         visualDayTime += visualDayTimeSpeed;
     }
 
     @Override
-    public float getTimeOfDay(float partialTick)
+    public double getVisualDayTime()
     {
-        if (!CommonConfiguration.config.getCommonConfig().enableSkySmoothing || Compat.genesis)
-        {
-            return super.getTimeOfDay(partialTick);
-        }
-
-        double time = visualDayTime + partialTick * visualDayTimeSpeed;
-        double d0 = Mth.frac(time / 24000.0D - 0.25D);
-        double d1 = 0.5D - Math.cos(d0 * Math.PI) / 2.0D;
-        float smoothTimeValue = (float) (d0 * 2.0D + d1) / 3.0F;
-
-        float dimensionValue = this.dimensionType().timeOfDay((long) time);
-        if (Math.abs(smoothTimeValue - dimensionValue) > 0.01)
-        {
-            return dimensionValue;
-        }
-
-        return smoothTimeValue;
+        return lastServerDayTime == -1 ? Double.NaN : visualDayTime;
     }
 }

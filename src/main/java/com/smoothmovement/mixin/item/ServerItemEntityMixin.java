@@ -27,7 +27,7 @@ public abstract class ServerItemEntityMixin extends Entity
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/ItemEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"))
     private Vec3 changeVel(final Vec3 org)
     {
-        if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
+        if (level().isClientSide() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
         {
             return org;
         }
@@ -38,7 +38,7 @@ public abstract class ServerItemEntityMixin extends Entity
     @ModifyReturnValue(method = "getDefaultGravity", at = @At("RETURN"))
     private double changeGravity(final double gravity)
     {
-        if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
+        if (level().isClientSide() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
         {
             return gravity;
         }
@@ -49,7 +49,7 @@ public abstract class ServerItemEntityMixin extends Entity
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;multiply(DDD)Lnet/minecraft/world/phys/Vec3;", ordinal = 0), index = 0)
     private double changeVelX(final double x)
     {
-        if (level().isClientSide || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
+        if (level().isClientSide() || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
         {
             return x;
         }
@@ -60,7 +60,7 @@ public abstract class ServerItemEntityMixin extends Entity
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;multiply(DDD)Lnet/minecraft/world/phys/Vec3;", ordinal = 0), index = 1)
     private double changeVelY(final double y)
     {
-        if (level().isClientSide || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
+        if (level().isClientSide() || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
         {
             return y;
         }
@@ -71,7 +71,7 @@ public abstract class ServerItemEntityMixin extends Entity
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;multiply(DDD)Lnet/minecraft/world/phys/Vec3;", ordinal = 0), index = 2)
     private double changeVelZ(final double z)
     {
-        if (level().isClientSide || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
+        if (level().isClientSide() || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableItemLagAdjustedMovement)
         {
             return z;
         }

@@ -1,8 +1,6 @@
 {
   "required": false,
   "package": "com.smoothmovement.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "refmap": "smoothmovement.refmap.json",
   "mixinPriority": 2000,
   "mixins": [
     "compat.BetterDaysServer",
@@ -20,13 +18,13 @@
     "time.ServerTickMixin"
   ],
   "client": [
-    "compat.BetterDays",
     "item.ClientItemEntityMixin",
+    "interpolation.InterpolationHandlerMixin",
     "livingentity.ClientEntityMovementMixin",
     "nonliving.ClientMinecartMixin",
     "time.ClientLevelTimeDeltaMixin",
     "time.GametimePacketListenerMixin",
-    "time.NeoforgeTimePacketMixin"
+    "time.ClientClockMixin"
   ],
   "server": [
 

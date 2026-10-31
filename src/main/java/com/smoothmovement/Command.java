@@ -16,7 +16,7 @@ public class Command
         return Commands.literal(SmoothMovement.MODID)
             .then(
                 Commands.literal("setArtificialTPS")
-                    .requires(stack -> stack.hasPermission(2))
+                    .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                     .then(Commands.argument("tps", IntegerArgumentType.integer())
                         .executes(context ->
                         {
@@ -35,7 +35,7 @@ public class Command
                         })))
             .then(
                 Commands.literal("stopArtificialLag")
-                    .requires(stack -> stack.hasPermission(2))
+                    .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                     .executes(context ->
                     {
                         ServerTime.artificialLagTPS = -1;

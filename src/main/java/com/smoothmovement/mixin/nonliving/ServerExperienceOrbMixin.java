@@ -1,6 +1,5 @@
 package com.smoothmovement.mixin.nonliving;
 
-import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +22,7 @@ public abstract class ServerExperienceOrbMixin extends Entity
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"))
     private Vec3 changeVel(final Vec3 org)
     {
-        if (level().isClientSide || !CommonConfiguration.config.getCommonConfig().enableExpOrbLagAdjustedMovement)
+        if (level().isClientSide() || !CommonConfiguration.config.getCommonConfig().enableExpOrbLagAdjustedMovement)
         {
             return org;
         }

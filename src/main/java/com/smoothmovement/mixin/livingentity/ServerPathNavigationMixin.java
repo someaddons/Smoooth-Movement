@@ -84,7 +84,7 @@ public abstract class ServerPathNavigationMixin
     @Unique
     private boolean needsAdjustment()
     {
-        return ServerTime.hasLag() && CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement && !mob.level().isClientSide && mob.isAlive()
-            && !mob.isPassenger() && mob.isControlledByLocalInstance() && !(mob.getControllingPassenger() instanceof Player);
+        return ServerTime.hasLag() && CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement && !mob.level().isClientSide() && mob.isAlive()
+            && !mob.isPassenger() && mob.isLocalInstanceAuthoritative() && !(mob.getControllingPassenger() instanceof Player);
     }
 }

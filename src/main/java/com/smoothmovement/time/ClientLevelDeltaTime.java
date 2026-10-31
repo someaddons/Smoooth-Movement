@@ -12,8 +12,11 @@ public interface ClientLevelDeltaTime
      * Callback on time packet arrival
      * @param newGameTime
      * @param dayTime
+     * @param clockRate server clock speed, or zero while paused
      */
-    void onTimePacket(long newGameTime, final long dayTime);
+    void onTimePacket(long newGameTime, final long dayTime, final float clockRate);
+
+    double getVisualDayTime();
 
     /**
      * Get the daytime speed modifier

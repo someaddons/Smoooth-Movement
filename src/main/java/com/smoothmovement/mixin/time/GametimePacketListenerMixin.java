@@ -3,12 +3,11 @@ package com.smoothmovement.mixin.time;
 import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.time.ClientLevelDeltaTime;
 import com.smoothmovement.time.ServerTime;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.world.clock.ClockNetworkState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,10 +19,11 @@ public class GametimePacketListenerMixin
 {
     @Shadow private ClientLevel level;
 
-    @Inject(method = "handleSetTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;setGameTime(J)V"))
+    @Inject(method = "handleSetTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;setTimeFromServer(J)V"))
     private void onSetGameTime(final ClientboundSetTimePacket packet, final CallbackInfo ci)
     {
-        ((ClientLevelDeltaTime) level).onTimePacket(packet.getGameTime(), packet.getDayTime() < 0 ? -packet.getDayTime() : packet.getDayTime());
+        final ClockNetworkState state = level.dimensionType().defaultClock().map(packet.clockUpdates()::get).orElse(null);
+        ((ClientLevelDeltaTime) level).onTimePacket(packet.gameTime(), state == null ? -1 : state.totalTicks(), state == null ? 0 : state.rate());
     }
 
     @Inject(method = "handleSetScore", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundSetScorePacket;objectiveName()Ljava/lang/String;"), cancellable = true)
