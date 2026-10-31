@@ -34,6 +34,10 @@ public abstract class ServerProjectileMixin extends Entity
             extraTicking = true;
             for (int i = 0; i < ServerTime.extraTicks; i++)
             {
+                if (!isAlive())
+                {
+                    break;
+                }
                 tick();
             }
             extraTicking = false;
