@@ -10,7 +10,7 @@ buildscript {
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.141'
+    id 'net.neoforged.moddev' version '2.0.148'
     id 'idea'
 }
 
@@ -120,8 +120,8 @@ configurations {
 }
 
 dependencies {
-    implementation "curse.maven:cupboard-326652:8623573"
-    implementation "curse.maven:betterdays-895618:8290053"
+    implementation "curse.maven:cupboard-326652:8623576"
+    implementation "curse.maven:betterdays-895618:8330051"
 }
 
 
@@ -240,7 +240,6 @@ tasks.register("cleanupGradleDaemons") {
         }
     }
 }
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.core.JsonProcessingException
 
