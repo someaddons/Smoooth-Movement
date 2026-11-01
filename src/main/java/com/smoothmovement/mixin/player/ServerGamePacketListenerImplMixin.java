@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(value = ServerGamePacketListenerImpl.class, priority = 1)
 public class ServerGamePacketListenerImplMixin
 {
-    @ModifyConstant(method = "handleMovePlayer", constant = @Constant(doubleValue = 0.0625D), require = 0)
+    @ModifyConstant(method = "handlePlayerPositionChange", constant = @Constant(doubleValue = 0.0625D), require = 0)
     private double scalePlayerMovement(final double constant)
     {
         if (!CommonConfiguration.config.getCommonConfig().enableRubberbandingLagAdjustedMovement)
@@ -26,7 +26,7 @@ public class ServerGamePacketListenerImplMixin
         return ServerTime.slownessFactor * constant;
     }
 
-    @WrapOperation(method = "handleMovePlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;lengthSqr()D"), require = 0)
+    @WrapOperation(method = "handlePlayerPositionChange", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;lengthSqr()D"), require = 0)
     private double scalePlayerMovement(final Vec3 instance, final Operation<Double> original)
     {
         if (!CommonConfiguration.config.getCommonConfig().enableRubberbandingLagAdjustedMovement)

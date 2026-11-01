@@ -121,7 +121,7 @@ configurations {
 
 dependencies {
     implementation "curse.maven:cupboard-326652:8623576"
-    implementation "curse.maven:betterdays-895618:8330051"
+    compileOnly "curse.maven:betterdays-895618:8330051"
 }
 
 

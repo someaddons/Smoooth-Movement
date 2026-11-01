@@ -2,18 +2,20 @@ package com.smoothmovement;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.smoothmovement.debug.MovementTrace;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class Command
 {
     public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext)
     {
-        return Commands.literal(SmoothMovement.MODID)
+        final var command = Commands.literal(SmoothMovement.MODID)
             .then(
                 Commands.literal("setArtificialTPS")
                     .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -47,5 +49,11 @@ public class Command
                         return 1;
                     })
             );
+
+        if (!FMLEnvironment.isProduction())
+        {
+            command.then(MovementTrace.command());
+        }
+        return command;
     }
 }

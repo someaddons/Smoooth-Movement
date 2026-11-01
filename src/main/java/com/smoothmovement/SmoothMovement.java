@@ -1,10 +1,12 @@
 package com.smoothmovement;
 
+import com.smoothmovement.debug.MovementTrace;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +27,11 @@ public class SmoothMovement
         Compat.hourglass = FMLLoader.getCurrent().getLoadingModList().getModFileById("hourglass") != null || FMLLoader.getCurrent().getLoadingModList().getModFileById("betterdays") != null;
         Compat.genesis = FMLLoader.getCurrent().getLoadingModList().getModFileById("genesis") != null;
         NeoForge.EVENT_BUS.addListener(this::commandRegister);
+        if (!FMLEnvironment.isProduction())
+        {
+            NeoForge.EVENT_BUS.addListener(MovementTrace::beforeEntityTick);
+            NeoForge.EVENT_BUS.addListener(MovementTrace::afterEntityTick);
+        }
     }
 
     @SubscribeEvent

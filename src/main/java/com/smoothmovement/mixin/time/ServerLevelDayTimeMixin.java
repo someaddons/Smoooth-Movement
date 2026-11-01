@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 // Daytime now advances in the server clock, once for all dimensions.
-@Mixin(targets = "net.minecraft.world.clock.ServerClockManager$ClockInstance")
+@Mixin(targets = "net.minecraft.world.clock.ServerClockManager$ServerClockInstance")
 public abstract class ServerLevelDayTimeMixin
 {
     @Shadow
     @Final
     private Holder<WorldClock> holder;
 
-    @ModifyExpressionValue(method = "tick(Z)V", at = @At(value = "FIELD", target = "Lnet/minecraft/world/clock/ServerClockManager$ClockInstance;rate:F"))
+    @ModifyExpressionValue(method = "tick(Z)V", at = @At(value = "FIELD", target = "Lnet/minecraft/world/clock/ServerClockManager$ServerClockInstance;rate:F"))
     private float adjustDayTime(final float rate)
     {
         if (ServerTime.extraTicks > 0 && CommonConfiguration.config.getCommonConfig().enableSkyLagAdjustedMovement && !Compat.hourglass && !Compat.genesis
