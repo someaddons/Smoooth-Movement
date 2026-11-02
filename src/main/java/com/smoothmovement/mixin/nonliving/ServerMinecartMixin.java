@@ -43,7 +43,7 @@ public abstract class ServerMinecartMixin extends MinecartBehavior
         final BlockState state = level.getBlockState(pos);
         if (state.getBlock() instanceof BaseRailBlock railBlock)
         {
-            final RailShape shape = railBlock.getRailDirection(state, level, pos, minecart);
+            final RailShape shape = state.getValue(railBlock.getShapeProperty());
             if (shape == RailShape.EAST_WEST || shape == RailShape.NORTH_SOUTH)
             {
                 Direction direction = null;
@@ -56,7 +56,7 @@ public abstract class ServerMinecartMixin extends MinecartBehavior
                 final BlockState nextRail = level.getBlockState(pos.relative(direction));
                 if (nextRail.getBlock() instanceof BaseRailBlock railBlock2)
                 {
-                    final RailShape shape2 = railBlock2.getRailDirection(nextRail, level, pos.relative(direction), minecart);
+                    final RailShape shape2 = nextRail.getValue(railBlock2.getShapeProperty());
                     if (shape2 == RailShape.EAST_WEST || shape2 == RailShape.NORTH_SOUTH)
                     {
                         maxSpeed = 6.4f;

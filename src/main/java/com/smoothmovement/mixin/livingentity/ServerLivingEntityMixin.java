@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ServerTime;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -13,8 +14,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -54,8 +55,8 @@ public abstract class ServerLivingEntityMixin extends Entity
         acceleration = Vec3.ZERO;
     }
 
-    @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;jumpInFluid(Lnet/neoforged/neoforge/fluids/FluidType;)V"))
-    private void smoothmovement$captureFluidJump(final LivingEntity entity, final FluidType fluid, final Operation<Void> original)
+    @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;jumpInLiquid(Lnet/minecraft/tags/TagKey;)V"))
+    private void smoothmovement$captureFluidJump(final LivingEntity entity, final TagKey<Fluid> fluid, final Operation<Void> original)
     {
         if (level().isClientSide() || !ServerTime.hasLag() || !CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement)
         {

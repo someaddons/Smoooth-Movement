@@ -1,5 +1,6 @@
 package com.smoothmovement.mixin.time;
 
+import com.cupboard.Cupboard;
 import com.smoothmovement.SmoothMovement;
 import com.smoothmovement.time.ClientLevelDeltaTime;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,7 +11,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.WritableLevelData;
-import net.neoforged.fml.loading.FMLEnvironment;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -179,7 +179,7 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
 
         if (serversideSmoothMovement)
         {
-            if (!FMLEnvironment.isProduction() && Math.abs((20.0 / slownessFactor) - serverTPS) > 2)
+            if (!Cupboard.IN_DEV && Math.abs((20.0 / slownessFactor) - serverTPS) > 2)
             {
                 SmoothMovement.LOGGER.warn("large tps diff! client:" + (20.0 / slownessFactor) + " server:" + serverTPS);
             }
