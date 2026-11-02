@@ -29,7 +29,7 @@ public abstract class ServerProjectileMixin extends Entity
     @Inject(method = "tick", at = @At("RETURN"))
     private void extraTicks(final CallbackInfo ci)
     {
-        if (!extraTicking && !level().isClientSide && CommonConfiguration.config.getCommonConfig().enableProjectileLagAdjustedMovement)
+        if (!extraTicking && !level().isClientSide() && CommonConfiguration.config.getCommonConfig().enableProjectileLagAdjustedMovement)
         {
             extraTicking = true;
             for (int i = 0; i < ServerTime.extraTicks; i++)
