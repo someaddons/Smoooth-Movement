@@ -77,7 +77,7 @@ public class ServerTime
         }
 
         // When on serverside send a custom scoreboard packet to the client, allowing the client to use a more secure way of gauging server tps
-        if (packetCounter++ == 20)
+        if (++packetCounter == 20)
         {
             server.getPlayerList()
                 .broadcastAll(new ClientboundSetScorePacket(SmoothMovement.MODID, SCOREBOARD_TPS, (int) Math.round(20 / averageSlownessFactor), Optional.empty(), Optional.empty()));
