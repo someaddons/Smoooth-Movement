@@ -28,6 +28,9 @@ public abstract class ServerPathNavigationMixin
     @Shadow
     protected float maxDistanceToWaypoint;
 
+    @Shadow
+    public abstract float getMaxVerticalDistanceToWaypoint();
+
     @Unique
     private Path previousPath;
     @Unique
@@ -66,7 +69,8 @@ public abstract class ServerPathNavigationMixin
         final Vec3 end = mob.position();
         final Vec3 waypoint = path.getNextEntityPos(mob);
         // vanilla height restriction
-        if (start.distanceToSqr(end) > 64.0 || Math.abs(start.y - waypoint.y) >= 1.0 || Math.abs(end.y - waypoint.y) >= 1.0)
+        final double verticalRadius = getMaxVerticalDistanceToWaypoint();
+        if (start.distanceToSqr(end) > 64.0 || Math.abs(start.y - waypoint.y) >= verticalRadius || Math.abs(end.y - waypoint.y) >= verticalRadius)
         {
             return false;
         }
@@ -78,7 +82,7 @@ public abstract class ServerPathNavigationMixin
         }
 
         // Check if the waypoint was passed on the way from old to new position
-        return new AABB(waypoint.x - radius, waypoint.y - 1.0, waypoint.z - radius, waypoint.x + radius, waypoint.y + 1.0, waypoint.z + radius).clip(start, end).isPresent();
+        return new AABB(waypoint.x - radius, waypoint.y - verticalRadius, waypoint.z - radius, waypoint.x + radius, waypoint.y + verticalRadius, waypoint.z + radius).clip(start, end).isPresent();
     }
 
     @Unique

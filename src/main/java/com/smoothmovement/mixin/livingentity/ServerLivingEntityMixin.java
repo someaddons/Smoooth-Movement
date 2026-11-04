@@ -11,7 +11,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
@@ -43,6 +43,12 @@ public abstract class ServerLivingEntityMixin extends Entity
 
     @Shadow
     protected abstract double getEffectiveGravity();
+
+    @Shadow
+    private static float computeModifiedFriction(final float friction, final float modifier)
+    {
+        throw new AssertionError();
+    }
 
     public ServerLivingEntityMixin(final EntityType<?> type, final Level level)
     {
@@ -110,10 +116,12 @@ public abstract class ServerLivingEntityMixin extends Entity
     }
 
     @Inject(method = "travelInAir", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;handleRelativeFrictionAndCalculateMovement(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;"))
-    private void smoothmovement$captureGroundPhysics(final Vec3 input, final CallbackInfo ci, @Local(ordinal = 1) final float drag)
+    private void smoothmovement$captureGroundPhysics(final Vec3 input, final CallbackInfo ci, @Local(ordinal = 0) final float blockFriction)
     {
+        final LivingEntity entity = (LivingEntity) (Object) this;
         groundGravity = getEffectiveGravity();
-        groundDrag = ((LivingEntity) (Object) this).shouldDiscardFriction() ? 1.0 : drag;
+        groundDrag = entity.shouldDiscardFriction() ? 1.0
+            : blockFriction * computeModifiedFriction(0.91F, (float) entity.getAttributeValue(Attributes.AIR_DRAG_MODIFIER));
     }
 
     @ModifyArg(method = "handleRelativeFrictionAndCalculateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"), index = 1)
@@ -131,7 +139,8 @@ public abstract class ServerLivingEntityMixin extends Entity
             return movement.scale(slownessFactor);
         }
 
-        double verticalDrag = entity.shouldDiscardFriction() ? 1.0 : entity instanceof FlyingAnimal ? groundDrag : (double) 0.98F;
+        double verticalDrag = entity.shouldDiscardFriction() ? 1.0
+            : computeModifiedFriction(omnidirectionalAirMover() ? 0.91F : 0.98F, (float) entity.getAttributeValue(Attributes.AIR_DRAG_MODIFIER));
         double verticalForce = -groundGravity * verticalDrag;
         final var levitation = entity.getEffect(MobEffects.LEVITATION);
         if (levitation != null)
