@@ -1,61 +1,81 @@
 package com.smoothmovement.mixin.interpolation;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ClientLevelDeltaTime;
+import net.minecraft.world.entity.AbstractInterpolationHandler;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PositionPath;
+import net.minecraft.world.entity.SteppedInterpolationHandler;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InterpolationHandler.class)
+@Mixin(AbstractInterpolationHandler.class)
 public abstract class InterpolationHandlerMixin
 {
     @Shadow
-    private int interpolationSteps;
+    protected int interpolationSteps;
 
     @Shadow
     @Final
-    private Entity entity;
+    protected Entity entity;
 
-    @Shadow
-    @Final
-    private InterpolationHandler.InterpolationData interpolationData;
+    @WrapOperation(method = "interpolateTo(Lnet/minecraft/world/entity/PositionPath;FF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/AbstractInterpolationHandler;startInterpolating(Lnet/minecraft/world/entity/PositionPath;FF)V"))
+    private void adjustSteps(final AbstractInterpolationHandler handler, final PositionPath position, final float yRot, final float xRot, final Operation<Void> original)
+    {
+        final int steps = interpolationSteps;
+        if (!(handler instanceof SteppedInterpolationHandler))
+        {
+            interpolationSteps = Math.clamp(Math.round(steps * smoothingFactor()), steps, steps * 10);
+        }
+        try
+        {
+            original.call(handler, position, yRot, xRot);
+        }
+        finally
+        {
+            interpolationSteps = steps;
+        }
+    }
 
-    @Inject(method = "interpolateTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;position()Lnet/minecraft/world/phys/Vec3;"))
-    private void adjustSteps(final Vec3 position, final float yRot, final float xRot, final CallbackInfo ci)
+    @Unique
+    private double smoothingFactor()
     {
         if (!(entity.level() instanceof ClientLevelDeltaTime deltaLevel))
         {
-            return;
+            return 1.0;
         }
 
         if (deltaLevel.getSlownessFactor() <= 1.0 || !entity.isAlive())
         {
-            return;
+            return 1.0;
         }
 
         if ((entity instanceof LivingEntity && CommonConfiguration.config.getCommonConfig().enableLivingEntitySmoothing)
             || (entity instanceof AbstractMinecart && CommonConfiguration.config.getCommonConfig().enableMinecartSmoothing))
         {
-            interpolationData.steps = Math.clamp(Math.round(interpolationSteps * deltaLevel.getSlownessFactor()), interpolationSteps, interpolationSteps * 10);
+            return deltaLevel.getSlownessFactor();
         }
+        return 1.0;
     }
 
-    @ModifyVariable(method = "interpolateTo", at = @At("HEAD"), argsOnly = true)
-    private Vec3 adjustDeadPosition(final Vec3 position)
+    @ModifyVariable(method = "interpolateTo(Lnet/minecraft/world/entity/PositionPath;FF)V", at = @At("HEAD"), argsOnly = true)
+    private PositionPath adjustPosition(final PositionPath position)
     {
         if (entity instanceof LivingEntity && !entity.isAlive() && CommonConfiguration.config.getCommonConfig().enableLivingEntitySmoothing)
         {
-            return new Vec3(entity.getX(), Math.min(position.y, entity.getY()), entity.getZ());
+            entity.getInterpolation().cancel();
+            return PositionPath.of(new Vec3(entity.getX(), Math.min(position.endPosition().y, entity.getY()), entity.getZ()));
         }
+
         return position;
     }
 }

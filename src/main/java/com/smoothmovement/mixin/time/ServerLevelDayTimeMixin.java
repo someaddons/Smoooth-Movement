@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 // Daytime now advances in the server clock, once for all dimensions.
-@Mixin(targets = "net.minecraft.world.clock.ServerClockManager$ClockInstance")
+@Mixin(targets = "net.minecraft.world.clock.ServerClockManager$ServerClockInstance")
 public abstract class ServerLevelDayTimeMixin
 {
-    @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/clock/ServerClockManager$ClockInstance;rate:F"))
+    @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/clock/ServerClockManager$ServerClockInstance;rate:F"))
     private float adjustDayTime(final float rate)
     {
         if (ServerTime.extraTicks > 0 && CommonConfiguration.config.getCommonConfig().enableSkyLagAdjustedMovement && !Compat.hourglass && !Compat.genesis)

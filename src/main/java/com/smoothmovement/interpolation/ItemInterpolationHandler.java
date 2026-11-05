@@ -1,15 +1,19 @@
 package com.smoothmovement.interpolation;
 
+import com.smoothmovement.config.CommonConfiguration;
 import com.smoothmovement.time.ClientLevelDeltaTime;
+import net.minecraft.core.PositionAndRotation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.InterpolationHandler;
+import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Delays server corrections while the item continues to simulate its own movement.
  */
-public class ItemInterpolationHandler extends InterpolationHandler
+public class ItemInterpolationHandler implements InterpolationHandler
 {
     private static final double MAX_TARGET_DISTANCE     = 1.4;
     private static final double TELEPORT_DETECTION_DISTANCE = 64 * 64;
@@ -22,37 +26,33 @@ public class ItemInterpolationHandler extends InterpolationHandler
 
     public ItemInterpolationHandler(final ItemEntity entity)
     {
-        super(entity);
         this.entity = entity;
     }
 
     @Override
-    public Vec3 position()
+    public @Nullable PositionAndRotation target()
     {
-        return hasActiveInterpolation() ? targetPosition : entity.position();
+        return hasActiveInterpolation() ? PositionAndRotation.of(targetPosition, lerpYRot, lerpXRot) : null;
     }
 
     @Override
-    public float yRot()
+    public boolean interpolateTo(final @Nullable PositionPath path, final float yRot, final float xRot, final boolean hasRotation)
     {
-        return hasActiveInterpolation() ? lerpYRot : entity.getYRot();
-    }
+        if (!CommonConfiguration.config.getCommonConfig().enableItemSmoothing)
+        {
+            cancel();
+            return false;
+        }
 
-    @Override
-    public float xRot()
-    {
-        return hasActiveInterpolation() ? lerpXRot : entity.getXRot();
-    }
-
-    @Override
-    public void interpolateTo(final Vec3 position, final float yRot, final float xRot)
-    {
-        // Missing packet coordinates are filled from position(), so keep the pending delay for rotation-only updates.
+        final Vec3 position = path != null ? path.endPosition() : hasActiveInterpolation() ? targetPosition : entity.position();
+        final float targetYRot = hasRotation ? yRot : hasActiveInterpolation() ? lerpYRot : entity.getYRot();
+        final float targetXRot = hasRotation ? xRot : hasActiveInterpolation() ? lerpXRot : entity.getXRot();
+        // Keep the pending delay for rotation-only updates.
         if (hasActiveInterpolation() && targetPosition.equals(position))
         {
-            lerpYRot = yRot;
-            lerpXRot = xRot;
-            return;
+            lerpYRot = targetYRot;
+            lerpXRot = targetXRot;
+            return true;
         }
 
         lerpSteps = 2;
@@ -64,14 +64,21 @@ public class ItemInterpolationHandler extends InterpolationHandler
         }
 
         targetPosition = position;
-        lerpYRot = yRot;
-        lerpXRot = xRot;
+        lerpYRot = targetYRot;
+        lerpXRot = targetXRot;
         interpolate();
+        return true;
+    }
+
+    @Override
+    public void applyPredictedMovement(final Vec3 delta)
+    {
+        // Keep the server correction fixed while the item simulates its own movement.
     }
 
     public void lerpMotion(final Vec3 movement)
     {
-        if (lerpSteps < 2 || entity.tickCount < 2
+        if (!CommonConfiguration.config.getCommonConfig().enableItemSmoothing || lerpSteps < 2 || entity.tickCount < 2
             || !(entity.level() instanceof ClientLevelDeltaTime deltaLevel) || deltaLevel.getSlownessFactor() < 1.1)
         {
             entity.setDeltaMovement(movement);
@@ -87,6 +94,12 @@ public class ItemInterpolationHandler extends InterpolationHandler
     @Override
     public void interpolate()
     {
+        if (!CommonConfiguration.config.getCommonConfig().enableItemSmoothing)
+        {
+            cancel();
+            return;
+        }
+
         if (lerpSteps <= 0)
         {
             return;
@@ -114,7 +127,6 @@ public class ItemInterpolationHandler extends InterpolationHandler
     @Override
     public void cancel()
     {
-        super.cancel();
         lerpSteps = 0;
         targetPosition = new Vec3(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }

@@ -18,13 +18,15 @@
     "time.ServerTickMixin"
   ],
   "client": [
-    "item.ClientItemEntityMixin",
     "interpolation.InterpolationHandlerMixin",
+    "item.ClientItemEntityMixin",
+    "interpolation.SteppedInterpolationDataAccessor",
+    "interpolation.SteppedInterpolationHandlerMixin",
     "livingentity.ClientEntityMovementMixin",
     "nonliving.ClientMinecartMixin",
+    "time.ClientClockMixin",
     "time.ClientLevelTimeDeltaMixin",
-    "time.GametimePacketListenerMixin",
-    "time.ClientClockMixin"
+    "time.GametimePacketListenerMixin"
   ],
   "server": [
 
