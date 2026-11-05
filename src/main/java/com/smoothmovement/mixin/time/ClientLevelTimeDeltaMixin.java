@@ -93,14 +93,14 @@ public abstract class ClientLevelTimeDeltaMixin extends Level implements ClientL
     @Override
     public void onTimePacket(long newGameTime, final long serverDayTime)
     {
-        if (ticksSincePacket == 0)
-        {
-            // Something sent an extra packet, like hourglass mod
-            return;
-        }
-
         if (!serversideSmoothMovement)
         {
+            if (ticksSincePacket == 0)
+            {
+                // Something sent an extra packet, like hourglass mod, skip slowness re-calc with 0 delay
+                return;
+            }
+
             onServerPacketCalculateSlowness();
         }
 
