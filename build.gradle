@@ -48,7 +48,7 @@ repositories {
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation("curse.maven:cupboard-326652:8623566")
-    implementation("curse.maven:betterdays-895618:8330049")
+    compileOnly("curse.maven:betterdays-895618:8330049")
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
@@ -207,3 +207,16 @@ tasks.register("validateJson") {
 }
 
 processResources.dependsOn validateJson
+
+def uploaderHome = System.getenv('CFUPLOAD_HOME') ?:
+        new File(System.getProperty('user.home'), '.cfupload').path
+def uploaderScript = new File(uploaderHome, 'gradle.gradle')
+if (uploaderScript.isFile()) {
+    apply from: uploaderScript
+}
+curseForgeUploader.putAll([
+        minecraftVersions: ['26.3'],
+        loaders: ['Fabric'],
+        client: true,
+        server: true,
+])
