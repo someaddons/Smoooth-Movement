@@ -98,7 +98,7 @@ configurations {
 dependencies {
     implementation "curse.maven:cupboard-326652:6078150"
     implementation "curse.maven:spark-361579:6225208"
-    implementation "curse.maven:hourglass-895618:7294209"
+    compileOnly "curse.maven:hourglass-895618:7294209"
 }
 
 processResources {
