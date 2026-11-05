@@ -13,7 +13,7 @@ public class ServerLookControlMixin
     /**
      * Scale rotation step limits, but not the calls which cap the rotation instead
      */
-    @ModifyArg(method = {"tick", "lambda$tick$0"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/control/LookControl;rotateTowards(FFF)F"), index = 2)
+    @ModifyArg(method = {"tick", "method_37355"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/control/LookControl;rotateTowards(FFF)F"), index = 2)
     private float adjustYawSteps(final float steps)
     {
         if (!CommonConfiguration.config.getCommonConfig().enableLivingEntityLagAdjustedMovement)
